@@ -53,6 +53,7 @@ const (
 	wsEventHostScreenOff             = "host_screen_off"
 	wsEventHostLowerHand             = "host_lower_hand"
 	wsEventHostRemoved               = "host_removed"
+	wsEventRemoteControl             = "remote_control"
 
 	wsReconnectionTimeout = 10 * time.Second
 )
@@ -492,6 +493,32 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 			ChannelID: us.channelID,
 			UserIDs:   getUserIDsFromSessions(sessions),
 		})
+	case clientMessageTypeRemoteControl:
+		state, err := p.getCallState(us.channelID, false)
+		if err != nil {
+			return err
+		}
+		if state == nil {
+			return fmt.Errorf("no call ongoing")
+		}
+
+		if state.Call.Props.ScreenSharingSessionID == "" {
+			return fmt.Errorf("no one is sharing screen")
+		}
+
+		sharingSession, ok := state.sessions[state.Call.Props.ScreenSharingSessionID]
+		if !ok {
+			return fmt.Errorf("sharing session not found")
+		}
+
+		var remoteEvent interface{}
+		if err := json.Unmarshal(msg.Data, &remoteEvent); err != nil {
+			return fmt.Errorf("failed to unmarshal remote control event: %w", err)
+		}
+
+		p.publishWebSocketEvent(wsEventRemoteControl, map[string]interface{}{
+			"event": remoteEvent,
+		}, &WebSocketBroadcast{UserID: sharingSession.UserID, ReliableClusterSend: true})
 	default:
 		return fmt.Errorf("invalid client message type %q", msg.Type)
 	}
@@ -1301,7 +1328,7 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			return
 		}
 		msg.Data = data
-	case clientMessageTypeICE, clientMessageTypeScreenOn, clientMessageTypeVideoOn:
+	case clientMessageTypeICE, clientMessageTypeScreenOn, clientMessageTypeVideoOn, clientMessageTypeRemoteControl:
 		msgData, ok := req.Data["data"].(string)
 		if !ok {
 			p.LogError("invalid or missing data")
