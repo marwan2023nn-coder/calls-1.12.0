@@ -744,7 +744,7 @@ func TestWebSocketMessageHasBeenPostedUTF8Validation(t *testing.T) {
 			"join", "leave", "reconnect", "sdp", "ice",
 			"mute", "unmute", "voice_on", "voice_off",
 			"screen_on", "screen_off", "raise_hand", "unraise_hand",
-			"react", "caption", "metric", "call_state", "ping", "remote_control",
+			"react", "caption", "metric", "call_state", "ping",
 		}
 
 		for _, msgType := range validTypes {

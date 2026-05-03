@@ -142,7 +142,6 @@ interface State {
     alerts: CallAlertStates,
     removeConfirmation: RemoveConfirmationData | null,
     viewState: 'grid' | 'speaker',
-    remoteControlEnabled: boolean,
 }
 
 const StyledMediaController = styled(MediaController)`
@@ -293,7 +292,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             alerts: CallAlertStatesDefault,
             removeConfirmation: null,
             viewState: 'speaker',
-            remoteControlEnabled: false,
         };
 
         if (window.opener) {
@@ -569,10 +567,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         this.setState({
             showLiveCaptions: !this.state.showLiveCaptions,
         });
-    };
-
-    onRemoteControlToggle = () => {
-        this.setState({remoteControlEnabled: !this.state.remoteControlEnabled});
     };
 
     onCloseViewClick = () => {
@@ -1039,82 +1033,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         );
     };
 
-    sendRemoteControlEvent = (event: Record<string, unknown>) => {
-        const callsClient = getCallsClient();
-        if (callsClient?.ws) {
-            // We send the event as a flat object.
-            callsClient.ws.send('remote_control', event);
-        }
-    };
-
-    handleRemoteMouseEvent = (ev: React.MouseEvent<HTMLVideoElement> | React.WheelEvent<HTMLVideoElement>) => {
-        if (!this.state.remoteControlEnabled) {
-            return;
-        }
-
-        const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
-        if (isSharing) {
-            return;
-        }
-
-        ev.preventDefault();
-
-        // We don't want to stop propagation for mousemove events, otherwise
-        // the media controls will never be shown.
-        if (ev.type !== 'mousemove') {
-            ev.stopPropagation();
-        }
-
-        const rect = (ev.currentTarget as HTMLVideoElement).getBoundingClientRect();
-        const x = (ev.clientX - rect.left) / rect.width;
-        const y = (ev.clientY - rect.top) / rect.height;
-
-        const remoteEvent: Record<string, unknown> = {
-            type: ev.type,
-            x,
-            y,
-            button: (ev as React.MouseEvent).button,
-            ctrlKey: ev.ctrlKey,
-            shiftKey: ev.shiftKey,
-            altKey: ev.altKey,
-            metaKey: ev.metaKey,
-        };
-
-        if (ev.type === 'wheel') {
-            const wheelEv = ev as React.WheelEvent;
-            remoteEvent.deltaX = wheelEv.deltaX;
-            remoteEvent.deltaY = wheelEv.deltaY;
-        }
-
-        this.sendRemoteControlEvent(remoteEvent);
-    };
-
-    handleRemoteKeyboardEvent = (ev: React.KeyboardEvent) => {
-        if (!this.state.remoteControlEnabled) {
-            return;
-        }
-
-        const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
-        if (isSharing) {
-            return;
-        }
-
-        ev.preventDefault();
-        ev.stopPropagation();
-
-        const remoteEvent = {
-            type: ev.type,
-            key: ev.key,
-            code: ev.code,
-            ctrlKey: ev.ctrlKey,
-            shiftKey: ev.shiftKey,
-            altKey: ev.altKey,
-            metaKey: ev.metaKey,
-        };
-
-        this.sendRemoteControlEvent(remoteEvent);
-    };
-
     renderScreenSharingPlayer = () => {
         const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
         const {formatMessage} = this.props.intl;
@@ -1158,16 +1076,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         ref={this.setScreenPlayerRef}
                         muted={true}
                         autoPlay={true}
-                        onClick={(ev) => (this.state.remoteControlEnabled ? this.handleRemoteMouseEvent(ev) : ev.preventDefault())}
-                        onMouseDown={this.handleRemoteMouseEvent}
-                        onMouseUp={this.handleRemoteMouseEvent}
-                        onMouseMove={this.handleRemoteMouseEvent}
-                        onWheel={this.handleRemoteMouseEvent}
-                        onKeyDown={this.handleRemoteKeyboardEvent}
-                        onKeyUp={this.handleRemoteKeyboardEvent}
-                        onContextMenu={(ev) => (this.state.remoteControlEnabled ? ev.preventDefault() : null)}
-                        tabIndex={0}
-                        style={{cursor: this.state.remoteControlEnabled ? 'none' : 'default'}}
+                        onClick={(ev) => ev.preventDefault()}
                         controls={false}
                     />
                     <StyledMediaControlBar>
@@ -1622,28 +1531,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                                 onLiveCaptionsToggle={this.onLiveCaptionsToggle}
                                 showLiveCaptions={this.state.showLiveCaptions}
                             />
-
-                            {this.props.screenSharingSession && !isSharing && (
-                                <ControlsButton
-                                    id='calls-popout-remote-control-button'
-                                    ariaLabel={this.state.remoteControlEnabled ? formatMessage({defaultMessage: 'Disable remote control'}) : formatMessage({defaultMessage: 'Enable remote control'})}
-                                    onToggle={this.onRemoteControlToggle}
-                                    tooltipText={this.state.remoteControlEnabled ? formatMessage({defaultMessage: 'Disable remote control'}) : formatMessage({defaultMessage: 'Enable remote control'})}
-                                    bgColor={this.state.remoteControlEnabled ? 'white' : ''}
-                                    bgColorHover={this.state.remoteControlEnabled ? 'rgba(255, 255, 255, 0.92)' : ''}
-                                    iconFill={this.state.remoteControlEnabled ? 'rgba(var(--calls-bg-rgb), 0.80)' : ''}
-                                    iconFillHover={this.state.remoteControlEnabled ? 'var(--calls-bg)' : ''}
-                                    icon={
-                                        <CompassIcon
-                                            icon='cursor-default-outline'
-                                            style={{
-                                                width: '20px',
-                                                height: '20px',
-                                            }}
-                                        />
-                                    }
-                                />
-                            )}
                         </div>
                         <div style={{flex: '1', display: 'flex', justifyContent: 'flex-end'}}>
                             <DotMenu
