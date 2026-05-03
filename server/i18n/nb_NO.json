@@ -5,7 +5,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",
-        "translation": "Vi vil sterkt anbefale å bytte til [Mattermost Enterprise Edition](https://mattermost.com/pl/install-enterprise-install-upgrade) og [distribuere RTCD-tjenesten](https://mattermost.com/pl/calls-deployment -the-rtcd-service) for å avlaste samtalebehandling til en egen instans for å opprettholde ytelsen, skalerbarheten og påliteligheten til hovedserveren for Mattermost."
+        "translation": "Vi vil sterkt anbefale å bytte til [Mattermost Enterprise Edition](https://workspace.com/pl/install-enterprise-install-upgrade) og [distribuere RTCD-tjenesten](https://workspace.com/pl/calls-deployment -the-rtcd-service) for å avlaste samtalebehandling til en egen instans for å opprettholde ytelsen, skalerbarheten og påliteligheten til hovedserveren for Mattermost."
     },
     {
         "id": "app.push_notification.inviting_message",
@@ -21,7 +21,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.enterprise",
-        "translation": "Vi vil sterkt anbefale å [distribuere RTCD-tjenesten](https://mattermost.com/pl/calls-deployment-the-rtcd-service) for å overføre samtalebehandling til en separat instans for å opprettholde ytelsen, skalerbarheten og påliteligheten til din hovedserver for Mattermost."
+        "translation": "Vi vil sterkt anbefale å [distribuere RTCD-tjenesten](https://workspace.com/pl/calls-deployment-the-rtcd-service) for å overføre samtalebehandling til en separat instans for å opprettholde ytelsen, skalerbarheten og påliteligheten til din hovedserver for Mattermost."
     },
     {
         "id": "app.call.ended_message",
@@ -53,6 +53,6 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
-        "translation": "Vi vil sterkt anbefale å oppgradere til [Enterprise](https://mattermost.com/pricing/) og [distribuere RTCD-tjenesten](https://mattermost.com/pl/calls-deployment-the-rtcd-service) for å avlaste samtalebehandling til en egen instans for å opprettholde ytelsen, skalerbarheten og påliteligheten til din hovedserver for Mattermost."
+        "translation": "Vi vil sterkt anbefale å oppgradere til [Enterprise](https://workspace.com/pricing/) og [distribuere RTCD-tjenesten](https://workspace.com/pl/calls-deployment-the-rtcd-service) for å avlaste samtalebehandling til en egen instans for å opprettholde ytelsen, skalerbarheten og påliteligheten til din hovedserver for Mattermost."
     }
 ]

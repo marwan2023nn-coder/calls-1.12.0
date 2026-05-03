@@ -1,6 +1,7 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+// @ts-ignore: Side-effect import for styles without type declarations
 import './component.scss';
 
 import {DesktopCaptureSource} from '@mattermost/desktop-api';
@@ -30,8 +31,8 @@ export default class ScreenSourceModal extends React.PureComponent<Props, State>
         main: {
             position: 'absolute',
             top: 0,
-            left: 0,
-            right: 0,
+            insetInlineStart: 0,
+            insetInlineEnd: 0,
             bottom: 0,
             display: 'flex',
             justifyContent: 'center',
@@ -59,8 +60,7 @@ export default class ScreenSourceModal extends React.PureComponent<Props, State>
             padding: '26px 32px',
         },
         title: {
-            fontWeight: 600,
-            fontFamily: 'Metropolis',
+            fontFamily: 'Effra_Trial_Rg',
             fontSize: '22px',
             lineHeight: '28px',
         },
@@ -100,7 +100,6 @@ export default class ScreenSourceModal extends React.PureComponent<Props, State>
             alignItems: 'center',
             gap: '6px',
             margin: 0,
-            fontWeight: 400,
             alignSelf: 'end',
             padding: '16px 32px',
         },

@@ -78,18 +78,18 @@ export const CallIncoming = ({call}: Props) => {
                     <WideButton
                         data-testid={'call-incoming-dismiss'}
                         onClick={onDismiss}
-                        css={'margin-right: 8px'}
+                        css={'margin-inline-end: 8px'}
                     >
                         <CompassIcon
                             icon={'close'}
-                            css={'margin-right: 2px'}
+                            css={'margin-inline-end: 2px'}
                         />
                         {formatMessage({defaultMessage: 'Ignore'})}
                     </WideButton>
                     <JoinButton onClick={onJoin}>
                         <CompassIcon
                             icon={'phone-in-talk'}
-                            css={'margin-right: 5px'}
+                            css={'margin-inline-end: 5px'}
                         />
                         {formatMessage({defaultMessage: 'Join'})}
                     </JoinButton>
@@ -101,7 +101,7 @@ export const CallIncoming = ({call}: Props) => {
 
 const Container = styled.div`
     border-radius: 8px;
-    background-color: var(--online-indicator);
+    background-color: #00987e;
     cursor: pointer;
 `;
 
@@ -109,7 +109,7 @@ const Inner = styled.div`
     width: 100%;
     height: 100%;
     padding: 8px;
-    font-weight: 400;
+   
     font-size: 14px;
     line-height: 20px;
     background-color: rgba(0, 0, 0, 0.16);
@@ -137,7 +137,7 @@ const WideButton = styled(Button)`
     justify-content: center;
     padding: 0 16px;
 
-    background-color: rgba(var(--button-color-rgb), 0.12);
+    background-color: var(--dnd-indicator);
     color: var(--button-color);
 
     &:hover {

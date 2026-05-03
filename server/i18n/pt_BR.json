@@ -5,7 +5,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.enterprise",
-        "translation": "É altamente recomendável que você [implemente o serviço RTCD] (https://mattermost.com/pl/calls-deployment-the-rtcd-service) para descarregar o processamento de chamadas em uma instância separada, a fim de manter o desempenho, a escalabilidade e a confiabilidade do seu servidor Mattermost principal."
+        "translation": "É altamente recomendável que você [implemente o serviço RTCD] (https://workspace.com/pl/calls-deployment-the-rtcd-service) para descarregar o processamento de chamadas em uma instância separada, a fim de manter o desempenho, a escalabilidade e a confiabilidade do seu servidor Mattermost principal."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
@@ -13,7 +13,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
-        "translation": "É altamente recomendável que você faça upgrade para [Enterprise] (https://mattermost.com/pricing/) e [implemente o serviço RTCD] (https://mattermost.com/pl/calls-deployment-the-rtcd-service) para descarregar o processamento de chamadas em uma instância separada, a fim de manter o desempenho, a escalabilidade e a confiabilidade do seu servidor Mattermost principal."
+        "translation": "É altamente recomendável que você faça upgrade para [Enterprise] (https://workspace.com/pricing/) e [implemente o serviço RTCD] (https://workspace.com/pl/calls-deployment-the-rtcd-service) para descarregar o processamento de chamadas em uma instância separada, a fim de manter o desempenho, a escalabilidade e a confiabilidade do seu servidor Mattermost principal."
     },
     {
         "id": "app.call.ended_message",
@@ -53,6 +53,6 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",
-        "translation": "É altamente recomendável que você mude para o [Mattermost Enterprise Edition] (https://mattermost.com/pl/install-enterprise-install-upgrade) e [implemente o serviço RTCD] (https://mattermost.com/pl/calls-deployment-the-rtcd-service) para descarregar o processamento de chamadas em uma instância separada, a fim de manter o desempenho, a escalabilidade e a confiabilidade do seu servidor Mattermost principal."
+        "translation": "É altamente recomendável que você mude para o [Mattermost Enterprise Edition] (https://workspace.com/pl/install-enterprise-install-upgrade) e [implemente o serviço RTCD] (https://workspace.com/pl/calls-deployment-the-rtcd-service) para descarregar o processamento de chamadas em uma instância separada, a fim de manter o desempenho, a escalabilidade e a confiabilidade do seu servidor Mattermost principal."
     }
 ]

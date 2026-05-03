@@ -31,7 +31,7 @@ describe('TURNCredentialsExpirationMinutes', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     TURNCredentialsExpirationMinutes: 60,
                 },
@@ -42,7 +42,7 @@ describe('TURNCredentialsExpirationMinutes', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <TURNCredentialsExpirationMinutes
                         {...baseProps}
                         {...props}
@@ -82,7 +82,7 @@ describe('TURNCredentialsExpirationMinutes', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     TURNCredentialsExpirationMinutes: 60,
                 },

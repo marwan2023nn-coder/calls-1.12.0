@@ -33,8 +33,8 @@ const Container = styled.div`
     flex-direction: column;
     align-self: flex-start;
     gap: 5px;
-    margin-left: auto;
-    margin-right: 4px;
+   margin-inline-start: auto;
+    margin-inline-end: 4px;
     z-index: 10;
 `;
 

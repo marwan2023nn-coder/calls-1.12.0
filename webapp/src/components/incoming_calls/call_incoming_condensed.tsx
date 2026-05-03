@@ -116,7 +116,7 @@ export const CallIncomingCondensed = ({call, onWidget = false, joinButtonBorder 
 
 const Container = styled.div`
     border-radius: 8px;
-    background-color: var(--online-indicator);
+    background-color: #00987e;
     padding: 0;
     border: 0;
 `;
@@ -125,7 +125,7 @@ const Inner = styled.div`
     width: 100%;
     height: 100%;
     padding: 8px;
-    font-weight: 400;
+   
     font-size: 12px;
     background-color: rgba(0, 0, 0, 0.16);
     display: flex;
@@ -138,15 +138,16 @@ const Message = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    font-family: 'Effra_Trial_Rg';
     color: var(--button-color);
-    margin-right: auto;
+    margin-inline-end: auto;
 `;
 
 const SmallJoinButton = styled(Button)<{ $border: boolean }>`
     justify-content: center;
     height: 24px;
     padding: 4px 10px 4px 0;
-    font-weight: 600;
+    
     font-size: 11px;
 
     background-color: rgba(var(--button-color-rgb), 0.12);
@@ -171,7 +172,7 @@ const XButton = styled.button`
     border: 0;
     height: 24px;
     padding: 0 3px;
-    margin-left: -2px;
+   margin-inline-start: -2px;
     border-radius: 4px;
     font-size: 15px;
     background-color: transparent;

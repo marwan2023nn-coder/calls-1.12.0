@@ -5,7 +5,6 @@ import React, {ComponentProps, useRef, useState} from 'react';
 import {Overlay} from 'react-bootstrap';
 import {PrimaryButton} from 'src/components/buttons';
 import {StyledTooltip} from 'src/components/shared';
-import Shortcut from 'src/components/shortcut';
 import styled from 'styled-components';
 
 import Dropdown from './dropdown';
@@ -35,11 +34,10 @@ export const DropdownMenu = styled.div`
 
     width: max-content;
     min-width: 16rem;
-    text-align: left;
+    text-align: start;
     list-style: none;
 
     padding: 8px 0;
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -86,7 +84,7 @@ const DotMenu = ({
     dotMenuButton: MenuButton = DotMenuButton,
     dropdownMenu: Menu = DropdownMenu,
     id,
-    shortcut,
+    shortcut: _shortcut,
     tooltipText,
     tooltipSubtext,
     ariaLabel,
@@ -141,9 +139,6 @@ const DotMenu = ({
                                 {tooltipSubtext}
                             </TooltipSubtext>
                         }
-                        {shortcut &&
-                            <Shortcut shortcut={shortcut}/>
-                        }
                     </StyledTooltip>
                 </Overlay>
             }
@@ -173,7 +168,6 @@ const DotMenu = ({
 };
 
 const DropdownMenuItemStyled = styled.div`
-    font-family: 'Open Sans',sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;

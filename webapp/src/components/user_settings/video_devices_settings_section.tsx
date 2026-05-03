@@ -131,7 +131,7 @@ const VideoContainer = styled.div`
 const StyledCanvas = styled.canvas<{$mirror: boolean}>`
    position: absolute;
    top: 0;
-   left: 0;
+   insetInlineStart: 0;
    width: 100%;
    border-radius: 8px;
 
@@ -208,7 +208,7 @@ const CheckBoxContainer = styled.div`
     align-items: center;
 
     label {
-      font-weight: 400;
+     
       margin: 0;
       line-height: 16px;
     }
@@ -221,13 +221,13 @@ const CheckBoxContainer = styled.div`
 
 const SliderContainer = styled.div`
     margin-top: 10px;
-    margin-left: 24px;
+   margin-inline-start: 24px;
     display: flex;
     flex-direction: column;
     gap: 4px;
 
     label {
-      font-weight: 400;
+     
       font-size: 14px;
     }
 

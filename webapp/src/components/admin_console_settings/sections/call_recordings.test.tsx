@@ -24,7 +24,7 @@ describe('CallRecordingsSection', () => {
 
     const renderComponent = (storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {},
             },
             entities: {
@@ -42,7 +42,7 @@ describe('CallRecordingsSection', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <CallRecordingsSection settingsList={settingsList}/>
                 </IntlProvider>
             </Provider>,

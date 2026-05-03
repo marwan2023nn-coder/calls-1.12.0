@@ -80,8 +80,8 @@ const Container = styled.div<ContainerProps>`
 `;
 
 const Text = styled.span<{ $gap: number }>`
-    font-weight: 600;
-    margin-left: ${({$gap}) => $gap}px;
+    
+   margin-inline-start: ${({$gap}) => $gap}px;
 `;
 
 const Icon = styled.div<{ $fill?: string }>`
@@ -129,7 +129,7 @@ export const HostBadge = ({onWhiteBg, ...rest}: HostBadgeProps) => {
 };
 
 const HBadge = styled.div<{ $onWhiteBg?: boolean }>`
-    font-weight: 600;
+    
     padding: 0 4px;
     text-transform: uppercase;
     background: rgba(255, 255, 255, 0.08);

@@ -52,7 +52,7 @@ test.describe('join call', () => {
         // start a call
         const userPage = await startCall(userStorages[1]);
 
-        const joinCallButton = page.locator('.post__body').last().locator('button:has-text("Join call")');
+        const joinCallButton = page.locator('.post__body').last().locator('button:has-text("انضم إلى المكالمة")');
         await expect(joinCallButton).toBeVisible();
 
         await expect(page.locator('data-testid=call-thread').last()).toBeVisible();

@@ -42,7 +42,7 @@ export const Participant = ({session, profile, isYou, isHost, iAmHost, isSharing
     const isHandRaised = Boolean(session.raised_hand > 0);
     let youStyle: CSSProperties = {color: 'rgba(var(--center-channel-color-rgb), 0.56)'};
     if (isYou && isHost) {
-        youStyle = {...youStyle, marginLeft: '2px'};
+        youStyle = {...youStyle, marginInlineStart: '2px'};
     }
 
     const MuteIcon = isMuted ? MutedIcon : UnmutedIcon;
@@ -74,6 +74,7 @@ export const Participant = ({session, profile, isYou, isHost, iAmHost, isSharing
                     whiteSpace: 'pre',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
+                    fontFamily: 'Effra_Trial_Rg',
                     padding: '0',
                     lineHeight: '20px',
                     fontSize: '14px',
@@ -83,7 +84,7 @@ export const Participant = ({session, profile, isYou, isHost, iAmHost, isSharing
             </span>
 
             {(isYou || isHost) &&
-                <span style={{marginLeft: -8, display: 'flex', alignItems: 'baseline', gap: 5}}>
+                <span style={{marginInlineStart: -8, display: 'flex', alignItems: 'baseline', gap: 5}}>
                     {isYou &&
                         <span style={youStyle}>
                             {formatMessage({defaultMessage: '(you)'})}
@@ -103,7 +104,7 @@ export const Participant = ({session, profile, isYou, isHost, iAmHost, isSharing
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    marginLeft: 'auto',
+                    marginInlineStart: 'auto',
                     gap: '14px',
                 }}
             >
@@ -183,7 +184,7 @@ const ParticipantListItem = styled.li<{ $hover: boolean }>`
 `;
 
 const StyledDotMenu = styled(DotMenu)`
-    margin-right: -4px;
+    margin-inline-end: -4px;
 `;
 
 const StyledDotMenuButton = styled(DotMenuButton)<{ $isActive: boolean }>`

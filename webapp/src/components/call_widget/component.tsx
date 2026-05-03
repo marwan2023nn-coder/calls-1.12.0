@@ -3,6 +3,7 @@
 
 /* eslint-disable-file max-lines */
 
+// @ts-ignore: Side-effect import for styles without type declarations
 import './component.scss';
 
 import {mosThreshold} from '@mattermost/calls-common';
@@ -1148,12 +1149,11 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                 alignItems: 'center',
                                 position: 'absolute',
                                 padding: '8px 16px',
-                                background: 'var(--button-bg)',
+                                background: '#00987e',
                                 color: 'white',
                                 borderRadius: '4px',
-                                fontWeight: 600,
                                 top: '50%',
-                                left: '50%',
+                                insetInlineEnd: '50%',
                                 width: '112px',
                                 transform: 'translate(-50%, -50%)',
                             }}
@@ -1238,11 +1238,9 @@ export default class CallWidget extends React.PureComponent<Props, State> {
 
         return (
             <div style={{fontSize: '14px', lineHeight: '20px', display: 'flex', whiteSpace: 'pre'}}>
-                <span style={{fontWeight: speakingProfile ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                <span style={{fontFamily: 'Effra_Trial_Rg', overflow: 'hidden', textOverflow: 'ellipsis'}}>
                     {speakingProfile ? getUserDisplayName(speakingProfile) : formatMessage({defaultMessage: 'No one'})}
-                    <span
-                        style={{fontWeight: 400}}
-                    >{untranslatable(' ')}{formatMessage({defaultMessage: 'is talking…'})}</span>
+                    <span >{untranslatable(' ')}{formatMessage({defaultMessage: 'is talking…'})}</span>
                 </span>
             </div>
         );
@@ -1321,6 +1319,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                 color: 'var(--center-channel-color)',
                                 fontSize: '14px',
                                 width: '100%',
+                                textAlign: 'start',
                                 textOverflow: 'ellipsis',
                                 overflow: 'hidden',
                             }}
@@ -1492,6 +1491,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                     fontSize: '12px',
                                     width: '100%',
                                     lineHeight: '18px',
+                                    textAlign: 'start',
                                     textOverflow: 'ellipsis',
                                     overflow: 'hidden',
                                     whiteSpace: isDisabled ? 'initial' : 'nowrap',
@@ -1717,6 +1717,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                     color: 'rgba(var(--center-channel-color-rgb), 0.32)',
                                     fontSize: '12px',
                                     width: '100%',
+                                    textAlign: 'start',
                                     lineHeight: '16px',
                                     whiteSpace: 'initial',
                                 }}
@@ -2252,7 +2253,6 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
-                            fontWeight: 600,
                             letterSpacing: '0.02em',
                         }}
                     >
@@ -2285,7 +2285,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
-                            fontWeight: 600,
+                            textAlign: 'start',
                             letterSpacing: '0.02em',
                             fontSize: '12px',
                         }}
@@ -2587,7 +2587,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                 ariaLabel={openPopOutLabel}
                                 onToggle={this.onExpandClick}
                                 tooltipText={openPopOutLabel}
-                                tooltipPosition='left'
+                                tooltipPosition='right'
                                 bgColor=''
                                 icon={
                                     <ShowIcon
@@ -2623,11 +2623,11 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                     style={{fill: this.state.showParticipantsList ? 'var(--button-bg)' : ''}}
                                 />
                             }
-                            style={{marginRight: 'auto'}}
+                            style={{marginInlineEnd: 'auto'}}
                         >
                             <span
                                 style={{
-                                    fontWeight: 600,
+
                                     fontSize: '14px',
                                     color: this.state.showParticipantsList ? 'var(--button-bg)' : '',
                                 }}
@@ -2775,7 +2775,7 @@ const VideoPlayerContainer = styled.div<{$selfView: boolean, $hasVideo: boolean,
       justify-content: center;
       align-items: center;
       position: absolute;
-      left: 4px;
+      insetInlineStart: 4px;
       top: 4px;
       z-index: 1;
   `}
@@ -2784,7 +2784,7 @@ const VideoPlayerContainer = styled.div<{$selfView: boolean, $hasVideo: boolean,
       width: 100%;
       height: 100%;
       top: 0;
-      left: 0;
+      insetInlineStart: 0;
   `}
 
   ${({$hasVideo}) => !$hasVideo && css`
@@ -2896,7 +2896,7 @@ const WidgetProfileContainer = styled.div<{$videoView: boolean, $singleSession?:
 const MuteState = styled.div<{ $isMuted: boolean }>`
   position: absolute;
   bottom: 4px;
-  left: 4px;
+  insetInlineStart: 4px;
   border-radius: 20px;
   background: #14213E;
   width: 20px;

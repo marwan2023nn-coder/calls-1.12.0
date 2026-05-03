@@ -109,7 +109,7 @@ const Profile = styled.div<ProfileProps>`
     font-size: ${({$fontSize}) => $fontSize}px;
 
     &:not(:first-child) {
-        margin-left: -${({$size}) => $size * 0.25}px;
+       margin-inline-start: -${({$size}) => $size * 0.25}px;
     }
 
     box-shadow: ${({$borderGlowWidth, $borderGlowColor}) => $borderGlowWidth > 0 ? `0px 0px 0px ${$borderGlowWidth}px ${$borderGlowColor}` : 'none'};
@@ -120,7 +120,7 @@ const ProfilePlain = styled(Profile)`
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    
 
     &::before {
         position: absolute;

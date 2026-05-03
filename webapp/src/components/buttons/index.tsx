@@ -11,7 +11,7 @@ export const Button = styled.button`
     color: rgba(var(--center-channel-color-rgb), 0.72);
     border-radius: 4px;
     border: 0;
-    font-weight: 600;
+    
     font-size: 14px;
     padding: 0 20px;
     position: relative;
@@ -43,7 +43,7 @@ export const PrimaryButton = styled(Button)`
 
     &:before {
         content: '';
-        left: 0;
+        insetInlineStart: 0;
         top: 0;
         width: 100%;
         height: 100%;

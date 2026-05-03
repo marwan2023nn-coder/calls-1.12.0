@@ -47,7 +47,7 @@ const ChannelHeaderDropdownButton = ({
             <CompassIcon icon='phone'/>
             <div>
                 <span className='call-button-label'>
-                    {hasCall ? formatMessage({defaultMessage: 'Join call'}) : formatMessage({defaultMessage: 'Start call'})}
+                    {hasCall ? formatMessage({defaultMessage: 'انضم إلى المكالمة'}) : formatMessage({defaultMessage: 'Start call'})}
                 </span>
                 <span className='call-button-dropdown-sublabel'>
                     {formatMessage({defaultMessage: 'In this channel'})}
@@ -149,7 +149,7 @@ const UpsellIcon = styled.i`
     // &&&&&& is to override the call-button styles
     &&&&&& {
       position: absolute;
-      right: 10px;
+      insetInlineEnd: 10px;
       top: 16px;
       color: var(--button-bg);
       width: 16px;

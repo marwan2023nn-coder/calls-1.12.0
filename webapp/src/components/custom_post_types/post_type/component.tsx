@@ -4,7 +4,7 @@
 import {Post} from '@mattermost/types/posts';
 import {GlobalState} from '@mattermost/types/store';
 import {UserProfile} from '@mattermost/types/users';
-import {DateTime, Duration as LuxonDuration} from 'luxon';
+import {DateTime} from 'luxon';
 import {getUser} from 'mattermost-redux/selectors/entities/users';
 import React, {useCallback} from 'react';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
@@ -26,7 +26,6 @@ import {
     getCallPropsFromPost,
     getCallsClient,
     getUserDisplayName,
-    toHuman,
     untranslatable,
 } from 'src/utils';
 import styled from 'styled-components';
@@ -64,7 +63,7 @@ const PostType = ({
     const user = useSelector((state: GlobalState) => getUser(state, post.user_id));
     const callID = useSelector((state: GlobalState) => idForCallInChannel(state, post.channel_id)) || '';
     const [, onJoin] = useDismissJoin(post.channel_id, callID);
-
+    const endReason = typeof (post.props as any)?.end_reason === 'string' ? (post.props as any).end_reason : '';
     const timestampFn = useCallback(() => {
         return callStartedTimestampFn(intl, callProps.start_at);
     }, [intl, callProps.start_at]);
@@ -93,7 +92,7 @@ const PostType = ({
         </ArtifactsContainer>
     ) : null;
 
-    const transcriptionsSubMessage = recordings.length > 0 ? (
+    const transcriptionsSubMessage = transcriptions.length > 0 ? (
         <ArtifactsContainer>
             <CompassIcon
                 icon='file-text-outline'
@@ -103,34 +102,57 @@ const PostType = ({
         </ArtifactsContainer>
     ) : null;
 
-    const subMessage = callProps.start_at > 0 && callProps.end_at > 0 ? (
-        <>
-            <span>
-                {formatMessage(
-                    {defaultMessage: 'Ended at {endTime}'},
-                    {endTime: DateTime.fromMillis(callProps.end_at).toLocaleString(timeFormat)},
-                )}
-            </span>
-            <Divider>{untranslatable('•')}</Divider>
-            <span>
-                {formatMessage(
-                    {defaultMessage: 'Lasted {callDuration}'},
-                    {callDuration: toHuman(intl, LuxonDuration.fromMillis(callProps.end_at - callProps.start_at), 'minutes', {unitDisplay: 'long'})},
-                )}
-            </span>
-        </>
-    ) : (
-        <>
-            <Timestamp
-                timestampFn={timestampFn}
-                interval={5000}
-            />
-            { untranslatable(' ')}
-            {
-                formatMessage({defaultMessage: 'by {user}'}, {user: getUserDisplayName(user)})
-            }
-        </>
-    );
+    let subMessage = null;
+    if (callProps.start_at > 0 && callProps.end_at > 0) {
+        if (endReason === 'ignored') {
+            subMessage = (
+                <>
+                    <span>
+                        {formatMessage({id: 'app.call.ignored_message', defaultMessage: 'Call ignored'})}
+                    </span>
+                </>
+            );
+        } else if (endReason === 'no_answer') {
+            subMessage = (
+                <>
+                    <span>
+                        {formatMessage({id: 'app.call.no_answer_message', defaultMessage: 'Missed call'})}
+                    </span>
+                </>
+            );
+        } else {
+            subMessage = (
+                <>
+                    <span>
+                        {formatMessage(
+                            {id: 'app.call.started_at_message', defaultMessage: 'بدأت المكالمة في {startTime}'},
+                            {startTime: DateTime.fromMillis(callProps.start_at).toLocaleString(timeFormat)},
+                        )}
+                    </span>
+                    <Divider>{untranslatable(' • ')}</Divider>
+                    <span>
+                        {formatMessage(
+                            {id: 'app.call.ended_at_message', defaultMessage: 'انتهت المكالمة في {endTime}'},
+                            {endTime: DateTime.fromMillis(callProps.end_at).toLocaleString(timeFormat)},
+                        )}
+                    </span>
+                </>
+            );
+        }
+    } else {
+        subMessage = (
+            <>
+                <Timestamp
+                    timestampFn={timestampFn}
+                    interval={5000}
+                />
+                {untranslatable(' ')}
+                {
+                    formatMessage({id: 'app.call.started_by_user', defaultMessage: 'بواسطة {user}'}, {user: getUserDisplayName(user)})
+                }
+            </>
+        );
+    }
 
     let joinButton = (
         <JoinButton onClick={onJoin}>
@@ -138,7 +160,7 @@ const PostType = ({
                 fill='var(--center-channel-bg)'
                 style={{width: '16px', height: '16px'}}
             />
-            <ButtonText>{formatMessage({defaultMessage: 'Join call'})}</ButtonText>
+            <ButtonText>{formatMessage({id: 'app.call.join_call', defaultMessage: 'انضم إلى المكالمة'})}</ButtonText>
         </JoinButton>
     );
 
@@ -150,11 +172,11 @@ const PostType = ({
                 overlay={
                     <Tooltip id='tooltip-limit'>
                         <Header>
-                            {formatMessage({defaultMessage: 'Sorry, participants per call are currently limited to {count}.'}, {count: maxParticipants})}
+                            {formatMessage({id: 'app.call.limit_reached', defaultMessage: 'Sorry, participants per call are currently limited to {count}.'}, {count: maxParticipants})}
                         </Header>
                         {isCloudPaid &&
                             <SubHeader>
-                                {formatMessage({defaultMessage: 'This is because calls is in the beta phase. We’re working to remove this limit soon.'})}
+                                {formatMessage({id: 'app.call.limit_reached.cloud_paid', defaultMessage: 'This is because calls is in the beta phase. We’re working to remove this limit soon.'})}
                             </SubHeader>
                         }
                     </Tooltip>
@@ -162,7 +184,7 @@ const PostType = ({
             >
                 <DisabledButton>
                     <CallIcon fill='rgba(var(--center-channel-color-rgb), 0.32)'/>
-                    <ButtonText>{formatMessage({defaultMessage: 'Join call'})}</ButtonText>
+                    <ButtonText>{formatMessage({id: 'app.call.join_call', defaultMessage: 'انضم إلى المكالمة'})}</ButtonText>
                 </DisabledButton>
             </OverlayTrigger>
         );
@@ -203,8 +225,8 @@ const PostType = ({
                         <CallIndicator $ended={!callActive}>
                             {callActive &&
                                 <ActiveCallIcon
-                                    fill='var(--center-channel-bg)'
-                                    style={{width: '20px', height: '20px'}}
+                                    fill='rgb(236, 236, 236)'
+                                    style={{width: '14px', height: '14px'}}
                                 />
                             }
                             {!callActive &&
@@ -215,18 +237,15 @@ const PostType = ({
                             }
                         </CallIndicator>
                         <MessageWrapper>
-                            <Message>
-                                {callActive &&
-                                    formatMessage({defaultMessage: 'Call started'})
-                                }
-                                {!callActive &&
-                                    formatMessage({defaultMessage: 'Call ended'})
-                                }
-                            </Message>
+                            {callActive &&
+                                <Message>
+                                    {formatMessage({defaultMessage: 'بدأت المكالمة'})}
+                                </Message>
+                            }
                             <SubMessage>{subMessage}</SubMessage>
                         </MessageWrapper>
                     </Left>
-                    { (recordings.length > 0 || callActive) && <RowDivider/> }
+                    {(recordings.length > 0 || callActive) && <RowDivider/>}
                     <Right>
                         {callActive &&
                             <>
@@ -252,33 +271,26 @@ const PostType = ({
 };
 
 const Main = styled.div`
+   box-sizing: border-box;
     display: flex;
-    align-items: center;
-    width: min(600px, 100%);
-    margin: 4px 0;
-    padding: 16px;
-    background: var(--center-channel-bg);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-    box-shadow: var(--elevation-1);
-    color: var(--center-channel-color);
-    border-radius: 4px;
-
-    container: main / inline-size;
-
-    &:hover {
-        border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-    }
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+    background: rgb(236 236 236);
+    border: 1px solid rgb(222, 224, 224);
+    border-radius: 12px;
+    flex: 0 0 auto;
+    order: 0;
+    align-self: stretch;
+    color: black;
+    font-family: "Effra_Trial_Rg";
+    font-weight: normal;
+    width: fit-content;
+    direction: rtl;
 `;
 
 const SubMain = styled.div`
-    display: flex;
-    align-items: center;
-    width: 100%;
-    flex-wrap: wrap;
-    row-gap: 12px;
-
-    container-type: inline-size;
-
+display: inline-flex;
     @container main (inline-size < 566px) {
         flex-direction: column;
         align-items: flex-start;
@@ -290,11 +302,14 @@ const SubMain = styled.div`
 `;
 
 const Left = styled.div`
-    display: flex;
-    flex-grow: 10;
-    overflow: hidden;
-    white-space: nowrap;
+   display: flex;
+    justify-content: center;
     align-items: center;
+    padding-inline-start: 5px;
+    padding-inline-end: 5px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    gap: 2px;
 `;
 
 const Right = styled.div`
@@ -306,7 +321,6 @@ const Right = styled.div`
     @container main (inline-size < 566px) {
       width: 100%;
       justify-content: space-between;
-      flex-wrap: wrap;
     }
 
     &:empty {
@@ -328,39 +342,40 @@ const RowDivider = styled.hr`
 `;
 
 const CallIndicator = styled.div<{ $ended: boolean }>`
-    display: flex;
+   display: inline-flex;
     justify-content: center;
     align-items: center;
-    background: ${(props) => (props.$ended ? 'rgba(var(--center-channel-color-rgb), 0.08)' : 'var(--online-indicator)')};
-    border-radius: 24px;
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    gap: 8px;
+    background: #00987e;
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
 `;
 
 const MessageWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin: 0 12px;
+    display: inline-flex;
+    margin: 2px 0px;
     overflow: hidden;
+    font-family: 'Effra_Trial_Rg';
+     font-weight: normal;
 `;
 
 const Message = styled.span`
-    font-weight: 600;
-    font-family: Metropolis;
-    font-size: 16px;
     line-height: 24px;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--center-channel-color);
+    font-family: 'Effra_Trial_Rg';
+    padding-inline-end: 4px;
+    padding-inline-start: 4px;
+     font-family: 'Effra_Trial_Rg';
+     font-weight: normal;
+     font-size: 14px;
 `;
 
 const SubMessage = styled.div`
     white-space: normal;
-    font-size: 12px;
-    line-height: 16px;
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: 14px;
+    line-height: 24px;
+
 `;
 
 const Profiles = styled.div`
@@ -372,25 +387,35 @@ const Button = styled.button`
     display: flex;
     align-items: center;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 10px 16px;
     cursor: pointer;
+    background: #3cca3c;
+`;
+const ArtifactsContainer = styled.div`
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
 `;
 
 const JoinButton = styled(Button)`
     font-size: 14px;
     line-height: 20px;
     color: var(--center-channel-bg);
-    background: var(--online-indicator);
+    background: #00987e;
+    margin: 3px;
 
     &:hover {
-        background: linear-gradient(0deg, var(--online-indicator), var(--online-indicator)),
+        background: linear-gradient(0deg, #00987e, #00987e),
             linear-gradient(0deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.08));
         background-blend-mode: multiply;
     }
 
     &:active {
-        background: linear-gradient(0deg, var(--online-indicator), var(--online-indicator)),
+        background: linear-gradient(0deg, #00987e, #00987e),
             linear-gradient(0deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.16));
         background-blend-mode: multiply;
     }
@@ -410,6 +435,8 @@ const LeaveButton = styled(DotMenuButton)`
     line-height: 20px;
     color: var(--button-color);
     background: var(--error-text);
+    margin: 4px;
+    border-radius: 10px;
 
     &:hover {
         background: linear-gradient(0deg, var(--error-text), var(--error-text)),
@@ -427,8 +454,9 @@ const LeaveButton = styled(DotMenuButton)`
 `;
 
 const ButtonText = styled.span`
-    font-weight: 600;
     margin: 0 8px;
+    font-weight: normal;
+    font-family: "Effra_Trial_Rg";
 `;
 
 const DisabledButton = styled(Button)`
@@ -441,13 +469,14 @@ const Divider = styled.span`
     margin: 0 4px;
 `;
 
-const ArtifactsContainer = styled.div`
+// eslint-disable-next-line unused-imports/no-unused-vars
+const RecordingsContainer = styled.div`
     display: flex;
     align-items: center;
     font-size: 12px;
     line-height: 16px;
     white-space: nowrap;
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+    color: #2f987e;
 `;
 
 export default PostType;

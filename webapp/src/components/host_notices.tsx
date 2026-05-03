@@ -122,7 +122,7 @@ const Notice = styled.div<{ $onWidget?: boolean }>`
     gap: 8px;
     border-radius: 16px;
     width: fit-content;
-    font-weight: 600;
+
     font-size: 14px;
     line-height: 20px;
     background: var(--button-color);
@@ -132,7 +132,6 @@ const Notice = styled.div<{ $onWidget?: boolean }>`
         border-radius: 8px;
         padding: 4px 6px;
         font-size: 11px;
-        font-weight: 400;
         white-space: pre;
         background: var(--center-channel-bg);
         border: solid 1px rgba(var(--center-channel-color-rgb), 0.16);
@@ -143,8 +142,8 @@ const Notice = styled.div<{ $onWidget?: boolean }>`
 const StyledCompassIcon = styled(CompassIcon)<{ $onWidget?: boolean }>`
     color: var(--away-indicator);
     font-size: ${({$onWidget}) => ($onWidget ? 16 : 18)}px;
-    margin-right: ${({$onWidget}) => ($onWidget ? -4 : -5)}px;
-    margin-left: -3px;
+    margin-inline-end: ${({$onWidget}) => ($onWidget ? -4 : -5)}px;
+   margin-inline-start: -3px;
 `;
 
 const RedStyledCompassIcon = styled(StyledCompassIcon)`
@@ -153,14 +152,14 @@ const RedStyledCompassIcon = styled(StyledCompassIcon)`
 
 export const StyledMonitorAccount = styled(MonitorAccount)<{ $onWidget?: boolean }>`
     flex: none;
-    margin-left: 0;
+   margin-inline-start: 0;
     margin-top: 1px;
     fill: rgba(var(--calls-bg-rgb), 0.56);
     width: 18px;
 
     ${({$onWidget}) => $onWidget && css`
         fill: var(--center-channel-color-64);
-        margin-left: 1px;
+       margin-inline-start: 1px;
         width: 14px;
     `};
 `;
@@ -171,6 +170,7 @@ const Text = styled.span<{ $onWidget?: boolean }>`
     ${({$onWidget}) => $onWidget && css`
         overflow: hidden;
         text-overflow: ellipsis;
+        font-family: 'Effra_Trial_Rg';
         color: var(--center-channel-color);
     `}
 `;

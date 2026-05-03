@@ -45,6 +45,6 @@ const Caption = styled.div`
     background: rgba(0, 0, 0, 0.64);
     text-align: center;
     font-size: 18px;
-    font-weight: 400;
+   
     line-height: 24px; /* 133.333% */
 `;

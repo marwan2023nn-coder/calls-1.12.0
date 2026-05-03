@@ -112,7 +112,7 @@ const Main = styled.div`
 `;
 
 const Header = styled.div`
-    font-weight: 700;
+    
     line-height: 18px;
 `;
 
@@ -129,10 +129,10 @@ const Footer = styled.div`
 export const DefaultLeftButton = styled.button`
     color: var(--button-color);
     background: var(--button-bg);
-    font-weight: 600;
+    
     padding: 10px 16px;
     border-radius: 4px;
-    margin-right: 6px;
+    margin-inline-end: 6px;
 
     &:hover {
         background: rgba(var(--button-bg-rgb), 0.9);
@@ -142,10 +142,10 @@ export const DefaultLeftButton = styled.button`
 export const DefaultRightButton = styled.button`
     color: var(--dnd-indicator);
     background: rgba(var(--dnd-indicator-rgb), 0.08);
-    font-weight: 600;
+    
     padding: 10px 16px;
     border-radius: 4px;
-    margin-left: 6px;
+   margin-inline-start: 6px;
 
     &:hover {
         background: rgba(var(--dnd-indicator-rgb), 0.04);

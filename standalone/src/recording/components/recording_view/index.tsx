@@ -152,7 +152,7 @@ const RecordingView = () => {
                 style={{
                     display: 'flex',
                     alignItems: 'center',
-                    marginLeft: 'auto',
+                    marginInlineStart: 'auto',
                     whiteSpace: 'pre',
                 }}
             >
@@ -163,8 +163,8 @@ const RecordingView = () => {
                     borderGlowWidth={3}
                     url={profileImages[speakingProfile.id]}
                 />
-                <span style={{marginLeft: '8px'}}>{getUserDisplayName(speakingProfile)}</span>
-                <span style={{fontWeight: 400}}>{untranslatable(' ')}{formatMessage({defaultMessage: 'is talking…'})}</span>
+                <span style={{marginInlineStart: '8px'}}>{getUserDisplayName(speakingProfile)}</span>
+                <span style={{fontFamily: "'Effra_Trial_Rg'"}}>{untranslatable(' ')}{formatMessage({defaultMessage: 'is talking…'})}</span>
             </div>
         );
     };
@@ -191,7 +191,7 @@ const RecordingView = () => {
                 style={style.footer}
             >
                 <div><Timestamp/></div>
-                <span style={{marginLeft: '4px'}}>
+                <span style={{marginInlineStart: '4px'}}>
                     {untranslatable('• ')}{formatMessage({defaultMessage: '{count, plural, =1 {# participant} other {# participants}}'}, {count: sessions.length})}
                 </span>
                 {hasScreenShare && renderSpeaking()}
@@ -212,7 +212,7 @@ const style = {
         display: 'flex',
         flexDirection: 'column',
         top: 0,
-        left: 0,
+        insetInlineStart: 0,
         width: '100%',
         height: '100%',
         background: '#1E1E1E',
@@ -239,7 +239,6 @@ const style = {
         display: 'flex',
         background: '#000000',
         alignItems: 'center',
-        fontWeight: 600,
         lineHeight: '20px',
         fontSize: '14px',
         padding: '6px',

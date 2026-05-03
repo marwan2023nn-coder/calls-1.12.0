@@ -37,7 +37,9 @@ const ChannelLinkLabel = (props: Props) => {
                 <Tooltip
                     id='call-profiles'
                 >
-                    {formatMessage({defaultMessage: '{list} {count, plural, =1 {is} other {are}} on the call'}, {
+                    {formatMessage({
+                        defaultMessage: '{count, plural, =1 {{list} في المكالمة} other {{list} في المكالمة}}',
+                    }, {
                         count: props.profiles.length,
                         list: formatList(userList),
                     })}
@@ -47,21 +49,29 @@ const ChannelLinkLabel = (props: Props) => {
 
             <span
                 data-testid={'calls-sidebar-active-call-icon'}
-                style={
-                    {
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: 'auto',
-                        minWidth: '20px',
-                        marginLeft: 'auto',
-                        marginRight: '4px',
-                    }
-                }
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 'auto',
+                    minWidth: '20px',
+
+                    // استخدام الخصائص المنطقية لدعم الاتجاهين تلقائياً
+                    marginInlineStart: 'auto', // في العربي سيصبح Margin من اليسار، وفي الإنجليزي من اليمين
+                    marginInlineEnd: '4px', // يضمن مسافة 4px بجانب النص في أي اتجاه
+
+                    color: '#00987e', // تمرير اللون للأيقونة بالداخل عبر التوريث
+                }}
             >
                 <ActiveCallIcon
-                    fill={props.theme.sidebarText}
-                    style={{minWidth: '12px', maxWidth: '12px', minHeight: '12px', maxHeight: '12px'}}
+                    fill={'currentColor'} // أفضل ممارسة: اجعل الأيقونة تأخذ لون الـ span الأب
+                    style={{
+                        minWidth: '12px',
+                        maxWidth: '12px',
+                        minHeight: '12px',
+                        maxHeight: '12px',
+                        fill: '#00987e',
+                    }}
                 />
             </span>
         </OverlayTrigger>

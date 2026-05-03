@@ -104,7 +104,7 @@ const DeviceName = styled.span`
 const DeviceButton = styled.button<{$isCurrentDevice: boolean}>`
 &&& {
   display: flex;
-  background: ${({$isCurrentDevice}) => $isCurrentDevice ? 'rgba(28, 88, 217, 0.08)' : ''};
+  background: ${({$isCurrentDevice}) => ($isCurrentDevice ? 'rgba(28, 88, 217, 0.08)' : '')};
   line-height: 20px;
   padding: 8px 20px;
   align-items: center;
@@ -115,7 +115,7 @@ const DeviceButton = styled.button<{$isCurrentDevice: boolean}>`
 const DevicesList = styled.ul`
 &&&& {
   top: 0;
-  left: calc(100% + 4px);
+  insetInlineStart: calc(100% + 4px);
   overflow: auto;
   width: 280px;
   max-height: 164px;
@@ -228,17 +228,14 @@ const Devices = ({deviceType, isActive, onToggle}: DevicesProps) => {
     }
     const label = currentDevice?.label || formatMessage({defaultMessage: 'Default'});
 
-    let devices = deviceType === 'audioinput' ?
-        audioDevices.inputs?.filter((device) => device.deviceId && device.label) :
-        audioDevices.outputs?.filter((device) => device.deviceId && device.label);
+    let devices = deviceType === 'audioinput' ? audioDevices.inputs?.filter((device) => device.deviceId && device.label) : audioDevices.outputs?.filter((device) => device.deviceId && device.label);
     if (deviceType === 'videoinput') {
         devices = videoDevices.filter((device) => device.deviceId && device.label);
     }
 
     const isDisabled = devices.length === 0;
 
-    let deviceTypeLabel = deviceType === 'audioinput' ?
-        formatMessage({defaultMessage: 'Microphone'}) : formatMessage({defaultMessage: 'Audio output'});
+    let deviceTypeLabel = deviceType === 'audioinput' ? formatMessage({defaultMessage: 'Microphone'}) : formatMessage({defaultMessage: 'Audio output'});
     if (deviceType === 'videoinput') {
         deviceTypeLabel = formatMessage({defaultMessage: 'Camera'});
     }
@@ -298,7 +295,7 @@ const ShowDevicesIcon = styled.div<{$isDisabled: boolean}>`
     svg {
       width: 16px;
       height: 16px;
-      fill: ${({$isDisabled}) => $isDisabled ? 'rgba(var(--center-channel-color-rgb), 0.32)' : 'rgba(var(--center-channel-color-rgb), 0.56)'};
+      fill: ${({$isDisabled}) => ($isDisabled ? 'rgba(var(--center-channel-color-rgb), 0.32)' : 'rgba(var(--center-channel-color-rgb), 0.56)')};
     }
 }
 `;
@@ -313,7 +310,7 @@ const DeviceTypeLabel = styled.span`
 
 const DeviceLabel = styled.span<{$isDisabled: boolean}>`
 &&& {
-  color: ${({$isDisabled}) => $isDisabled ? 'rgba(var(--center-channel-color-rgb), 0.32)' : 'rgba(var(--center-channel-color-rgb), 0.56)'};
+  color: ${({$isDisabled}) => ($isDisabled ? 'rgba(var(--center-channel-color-rgb), 0.32)' : 'rgba(var(--center-channel-color-rgb), 0.56)')};
   font-size: 12px;
   width: 100%;
   line-height: 16px;
@@ -340,7 +337,7 @@ const DeviceIcon = styled.div<{$isDisabled: boolean}>`
     svg {
       width: 16px;
       height: 16px;
-      fill: ${({$isDisabled}) => $isDisabled ? 'rgba(var(--center-channel-color-rgb), 0.32)' : 'rgba(var(--center-channel-color-rgb), 0.56)'};
+      fill: ${({$isDisabled}) => ($isDisabled ? 'rgba(var(--center-channel-color-rgb), 0.32)' : 'rgba(var(--center-channel-color-rgb), 0.56)')};
     }
     flex-shrink: 0;
 }
@@ -351,8 +348,8 @@ const DeviceTypeButton = styled.button<{$active: boolean, disabled: boolean}>`
     display: flex;
     align-items: start;
     padding: 6px 16px;
-    color: ${({disabled}) => disabled ? 'rgba(var(--center-channel-color-rgb), 0.32)' : ''};
-    background: ${({$active}) => $active ? 'rgba(var(--center-channel-color-rgb), 0.08)' : ''};
+    color: ${({disabled}) => (disabled ? 'rgba(var(--center-channel-color-rgb), 0.32)' : '')};
+    background: ${({$active}) => ($active ? 'rgba(var(--center-channel-color-rgb), 0.08)' : '')};
     gap: 16px;
 }
 `;
@@ -495,7 +492,7 @@ const MenuList = styled.ul`
     min-width: 280px;
     top: auto;
     bottom: calc(4px + 100%);
-    left: calc(-280px + 100%);
+    insetInlineStart: calc(-280px + 100%);
     border-radius: 8px;
     background: var(--center-channel-bg);
     color: var(--center-channel-color);

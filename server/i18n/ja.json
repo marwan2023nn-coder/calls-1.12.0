@@ -1,7 +1,7 @@
 [
     {
         "id": "app.admin.concurrent_sessions_warning.enterprise",
-        "translation": "Mattermostサーバー自体のパフォーマンス、スケーラビリティ、信頼性を維持するために、通話処理を別のインスタンスにオフロード可能な[RTCDサービス](https://mattermost.com/pl/calls-deployment-the-rtcd-service)をデプロイすることを強く推奨します。"
+        "translation": "Mattermostサーバー自体のパフォーマンス、スケーラビリティ、信頼性を維持するために、通話処理を別のインスタンスにオフロード可能な[RTCDサービス](https://workspace.com/pl/calls-deployment-the-rtcd-service)をデプロイすることを強く推奨します。"
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
@@ -9,7 +9,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
-        "translation": "Mattermostサーバー自体のパフォーマンス、スケーラビリティ、信頼性を維持するために、[Enterprise版](https://mattermost.com/pricing/)にアップグレードし、[RTCDサービス](https://mattermost.com/pl/calls-deployment-the-rtcd-service)をデプロイすることで、通話処理を別のインスタンスにオフロードすることを強く推奨します。"
+        "translation": "Mattermostサーバー自体のパフォーマンス、スケーラビリティ、信頼性を維持するために、[Enterprise版](https://workspace.com/pricing/)にアップグレードし、[RTCDサービス](https://workspace.com/pl/calls-deployment-the-rtcd-service)をデプロイすることで、通話処理を別のインスタンスにオフロードすることを強く推奨します。"
     },
     {
         "id": "app.add_user_session.group_calls_not_allowed_error",
@@ -17,7 +17,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",
-        "translation": "Mattermostサーバ自体のパフォーマンス、スケーラビリティ、および信頼性を維持するために、[Mattermost Enterprise Edition](https://mattermost.com/pl/install-enterprise-install-upgrade) と [RTCDサービス](https://mattermost.com/pl/calls-deployment-the-rtcd-service) の利用に切り替え、通話処理を別のインスタンスにオフロードすることを強く推奨します。"
+        "translation": "Mattermostサーバ自体のパフォーマンス、スケーラビリティ、および信頼性を維持するために、[Mattermost Enterprise Edition](https://workspace.com/pl/install-enterprise-install-upgrade) と [RTCDサービス](https://workspace.com/pl/calls-deployment-the-rtcd-service) の利用に切り替え、通話処理を別のインスタンスにオフロードすることを強く推奨します。"
     },
     {
         "id": "app.call.ended_message",

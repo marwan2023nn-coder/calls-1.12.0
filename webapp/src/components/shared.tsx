@@ -2,20 +2,20 @@
 // See LICENSE.txt for license information.
 
 import {Tooltip} from 'react-bootstrap';
-import styled, {css} from 'styled-components';
+import styled, {createGlobalStyle, css} from 'styled-components';
 
 export const Header = styled.div`
-    font-weight: 600;
+    
 `;
 
 export const SubHeader = styled.div`
     font-size: 11px;
-    font-weight: 400;
+   
     opacity: 0.56;
 `;
 
 export const HorizontalSpacer = styled.div<{ $size: number }>`
-    margin-left: ${(props) => props.$size}px;
+   margin-inline-start: ${(props) => props.$size}px;
 `;
 
 export const VerticalSpacer = styled.div<{ $size: number }>`
@@ -25,7 +25,47 @@ export const VerticalSpacer = styled.div<{ $size: number }>`
 export const StyledTooltip = styled(Tooltip)<{$isDisabled?: boolean}>`
   ${({$isDisabled}) => $isDisabled && css`
       display: none;
+      background-color: rgb(var(--button-bg-rgb)) !important;
   `}
+`;
+
+export const CallsTooltipStyle = createGlobalStyle`
+  .tooltip .tooltip-inner {
+    background-color: #00987e !important;
+    color: var(--button-color) !important;
+  }
+
+  .tooltip .tooltip-arrow::before {
+    border-color: rgb(var(--button-bg-rgb)) !important;
+  }
+
+  .bs-tooltip-top .arrow::before,
+  .bs-tooltip-auto[x-placement^="top"] .arrow::before,
+  .bs-tooltip-top .tooltip-arrow::before,
+  .bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow::before {
+    border-top-color: rgb(var(--button-bg-rgb)) !important;
+  }
+
+  .bs-tooltip-right .arrow::before,
+  .bs-tooltip-auto[x-placement^="right"] .arrow::before,
+  .bs-tooltip-end .tooltip-arrow::before,
+  .bs-tooltip-auto[data-popper-placement^="right"] .tooltip-arrow::before {
+    border-right-color: rgb(var(--button-bg-rgb)) !important;
+  }
+
+  .bs-tooltip-bottom .arrow::before,
+  .bs-tooltip-auto[x-placement^="bottom"] .arrow::before,
+  .bs-tooltip-bottom .tooltip-arrow::before,
+  .bs-tooltip-auto[data-popper-placement^="bottom"] .tooltip-arrow::before {
+    border-bottom-color: rgb(var(--button-bg-rgb)) !important;
+  }
+
+  .bs-tooltip-left .arrow::before,
+  .bs-tooltip-auto[x-placement^="left"] .arrow::before,
+  .bs-tooltip-start .tooltip-arrow::before,
+  .bs-tooltip-auto[data-popper-placement^="left"] .tooltip-arrow::before {
+    border-left-color: rgb(var(--button-bg-rgb)) !important;
+  }
 `;
 
 export const Spinner = styled.span<{$size: number}>`

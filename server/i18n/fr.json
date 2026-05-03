@@ -5,7 +5,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.enterprise",
-        "translation": "Nous recommandons fortement de [déployer le service RTCD](https://mattermost.com/pl/calls-deployment-the-rtcd-service) afin de décharger le traitement des appels vers une instance séparée pour maintenir la performance, la scalabilité et la fiabilité de votre serveur Mattermost principal."
+        "translation": "Nous recommandons fortement de [déployer le service RTCD](https://workspace.com/pl/calls-deployment-the-rtcd-service) afin de décharger le traitement des appels vers une instance séparée pour maintenir la performance, la scalabilité et la fiabilité de votre serveur Mattermost principal."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
@@ -13,11 +13,11 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",
-        "translation": "Nous recommandons fortement de passer à [Mattermost Enterprise Edition](https://mattermost.com/pl/install-enterprise-install-upgrade) et de [déployer le service RTCD](https://mattermost.com/pl/calls-deployment-the-rtcd-service) afin de décharger le traitement des appels vers une instance séparée pour maintenir la performance, la scalabilité et la fiabilité de votre serveur Mattermost principal."
+        "translation": "Nous recommandons fortement de passer à [Mattermost Enterprise Edition](https://workspace.com/pl/install-enterprise-install-upgrade) et de [déployer le service RTCD](https://workspace.com/pl/calls-deployment-the-rtcd-service) afin de décharger le traitement des appels vers une instance séparée pour maintenir la performance, la scalabilité et la fiabilité de votre serveur Mattermost principal."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
-        "translation": "Nous recommandons fortement de mettre à niveau vers [Enterprise](https://mattermost.com/pricing/) et de [déployer le service RTCD](https://mattermost.com/pl/calls-deployment-the-rtcd-service) afin de décharger le traitement des appels vers une instance séparée pour maintenir la performance, la scalabilité et la fiabilité de votre serveur Mattermost principal."
+        "translation": "Nous recommandons fortement de mettre à niveau vers [Enterprise](https://workspace.com/pricing/) et de [déployer le service RTCD](https://workspace.com/pl/calls-deployment-the-rtcd-service) afin de décharger le traitement des appels vers une instance séparée pour maintenir la performance, la scalabilité et la fiabilité de votre serveur Mattermost principal."
     },
     {
         "id": "app.call.ended_message",

@@ -192,13 +192,11 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                 display: 'flex',
                 flexDirection: 'column',
                 flex: '1',
-                background: 'var(--calls-bg)',
-
-                // Minimum z-index value needed to prevent the onboarding widget on the bottom left from showing on top.
+                background: '#202228',
                 zIndex: '101',
             },
             headerSpreader: {
-                marginRight: 'auto',
+                marginInlineEnd: 'auto',
             },
             controls: {
                 display: 'flex',
@@ -207,6 +205,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                 padding: '12px',
                 width: '100%',
                 gap: '8px',
+                background: '#202228',
             },
             centerControls: {
                 display: 'flex',
@@ -220,7 +219,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                 justifyContent: 'center',
                 fontSize: '14px',
                 lineHeight: '20px',
-                fontWeight: 600,
                 padding: '8px',
                 margin: '0 12px',
                 gap: '4px',
@@ -246,7 +244,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                 borderRadius: '12px',
                 lineHeight: '12px',
                 fontSize: '10px',
-                fontWeight: 600,
                 letterSpacing: '0.02em',
                 color: 'var(--button-color)',
                 margin: '4px',
@@ -272,8 +269,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                 alignItems: 'center',
                 background: 'rgba(var(--center-channel-color-rgb), 0.04)',
                 borderBottom: '1px solid rgba(var(--center-channel-color-rgb), 0.08)',
-                fontFamily: 'Metropolis, sans-serif',
-                fontWeight: 600,
+                fontFamily: "'Effra_Trial_Rg'",
                 fontSize: '16px',
                 padding: '0 16px',
                 height: '56px',
@@ -628,7 +624,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         // making a potentially racy HTTP call and should guarantee
         // a consistent state.
         logDebug('requesting call state through ws');
-        this.context.sendMessage('custom_com.mattermost.calls_call_state', {channelID: callsClient.channelID});
+        this.context.sendMessage('custom_com.workspace.calls_call_state', {channelID: callsClient.channelID});
     };
 
     public componentDidMount() {
@@ -1287,7 +1283,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                     ...this.style.root,
                     position: 'absolute',
                     top: 0,
-                    left: 0,
+                    insetInlineStart: 0,
                 }}
             >
                 <div style={this.style.main}>
@@ -1698,17 +1694,17 @@ const ExpandedViewGlobalsStyle = createGlobalStyle<{ callThreadSelected: boolean
 `;
 
 const ToTheRight = styled.div`
-    margin-left: auto;
+   margin-inline-start: auto;
 `;
 
 const MuteOthersButton = styled.button`
     display: flex;
     padding: 8px 8px;
-    margin-right: 6px;
+    margin-inline-end: 6px;
     gap: 6px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Effra_Trial_Rg';
     font-size: 11px;
-    font-weight: 600;
+    
     line-height: 16px;
     color: var(--button-bg);
     align-items: center;
@@ -1907,7 +1903,7 @@ const VideoProfileState = styled.div`
   display: flex;
   position: absolute;
   bottom: 0;
-  left: 0;
+  insetInlineStart: 0;
   align-items: center;
   justify-content: center;
   border-radius: 0px 4px;
@@ -1917,7 +1913,7 @@ const VideoProfileState = styled.div`
 
   font-size: 12px;
   font-style: normal;
-  font-weight: 600;
+  
   line-height: 16px;
 `;
 

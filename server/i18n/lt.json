@@ -5,7 +5,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
-        "translation": "Primygtinai rekomenduojame atnaujinti [Enterprise](https://mattermost.com/pricing/) ir [įdiegti RTCD paslaugą](https://mattermost.com/pl/calls-deployment-the-rtcd-service), kad skambučių apdorojimas būtų perkeltas į atskirą egzempliorių ir būtų išlaikytas pagrindinio \"Mattermost\" serverio našumas, mastelio keitimas ir patikimumas."
+        "translation": "Primygtinai rekomenduojame atnaujinti [Enterprise](https://workspace.com/pricing/) ir [įdiegti RTCD paslaugą](https://workspace.com/pl/calls-deployment-the-rtcd-service), kad skambučių apdorojimas būtų perkeltas į atskirą egzempliorių ir būtų išlaikytas pagrindinio \"Mattermost\" serverio našumas, mastelio keitimas ir patikimumas."
     },
     {
         "id": "app.call.new_recording_and_transcription_message",
@@ -33,7 +33,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.enterprise",
-        "translation": "Labai rekomenduojame [diegti RTCD paslaugą](https://mattermost.com/pl/calls-deployment-the-rtcd-service), kad skambučių apdorojimas būtų perkeltas į atskirą egzempliorių ir būtų išlaikytas pagrindinio \"Mattermost\" serverio našumas, mastelio keitimas ir patikimumas."
+        "translation": "Labai rekomenduojame [diegti RTCD paslaugą](https://workspace.com/pl/calls-deployment-the-rtcd-service), kad skambučių apdorojimas būtų perkeltas į atskirą egzempliorių ir būtų išlaikytas pagrindinio \"Mattermost\" serverio našumas, mastelio keitimas ir patikimumas."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
@@ -41,7 +41,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",
-        "translation": "Labai rekomenduojame pereiti prie [Mattermost Enterprise Edition](https://mattermost.com/pl/install-enterprise-install-upgrade) ir [įdiegti RTCD paslaugą](https://mattermost.com/pl/calls-deployment-the-rtcd-service), kad skambučių apdorojimas būtų perkeltas į atskirą egzempliorių ir būtų išlaikytas pagrindinio \"Mattermost\" serverio našumas, mastelio keitimas ir patikimumas."
+        "translation": "Labai rekomenduojame pereiti prie [Mattermost Enterprise Edition](https://workspace.com/pl/install-enterprise-install-upgrade) ir [įdiegti RTCD paslaugą](https://workspace.com/pl/calls-deployment-the-rtcd-service), kad skambučių apdorojimas būtų perkeltas į atskirą egzempliorių ir būtų išlaikytas pagrindinio \"Mattermost\" serverio našumas, mastelio keitimas ir patikimumas."
     },
     {
         "id": "app.push_notification.inviting_message",

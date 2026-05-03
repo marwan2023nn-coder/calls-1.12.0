@@ -78,7 +78,7 @@ const Text = styled.span<{$size: number}>`
   color: var(--center-channel-color);
   font-size: ${({$size}) => $size}px;
   line-height: 16px;
-  font-weight: 600;
+  
 `;
 
 export type LoadingOverlayProps = {

@@ -14,7 +14,7 @@ export const LabelRow = styled.div`
 `;
 
 export const Label = styled.span`
-    margin-right: 8px;
+    margin-inline-end: 8px;
 `;
 
 export const EnterprisePill = ({children}: {children: ReactNode}) => (
@@ -33,9 +33,9 @@ const Enterprise = styled.div`
     height: 20px;
     gap: 1px;  // compass-icons have a 2.4px horizontal margin
 
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Effra_Trial_Rg';
     font-size: 12px;
-    font-weight: 600;
+    
     line-height: 16px;
 
     background: rgba(var(--button-bg-rgb), 0.12);
@@ -60,16 +60,16 @@ export const Title = styled.div`
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'Metropolis', sans-serif;
-    font-weight: 600;
+    font-family: 'Effra_Trial_Rg', sans-serif;
+    
     font-size: 16px;
     line-height: 24px;
     color: var(--center-channel-text);
 `;
 
 export const Text = styled.div`
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
+    font-family: 'Effra_Trial_Rg';
+   
     font-size: 12px;
     line-height: 16px;
     color: var(--center-channel-text);
@@ -82,26 +82,26 @@ export const Footer = styled.div`
 export const FooterText = styled.div`
     display: flex;
     align-items: center;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
+    font-family: 'Effra_Trial_Rg';
+   
     font-size: 10px;
     line-height: 16px;
     color: rgba(var(--center-channel-text-rgb), 0.72);
 `;
 
 export const ModalTitle = styled.div`
-    font-family: 'Metropolis', sans-serif;
+    font-family: 'Effra_Trial_Rg', sans-serif;
     font-style: normal;
-    font-weight: 600;
+    
     font-size: 22px;
     line-height: 28px;
     text-align: center;
 `;
 
 export const ModalBody = styled.div`
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Effra_Trial_Rg';
     font-style: normal;
-    font-weight: 400;
+   
     font-size: 14px;
     line-height: 20px;
 `;
@@ -155,14 +155,14 @@ export const RadioInput = styled.input<{disabled: boolean}>`
 export const RadioInputLabel = styled.label<{$disabled: boolean}>`
   display: inline-flex;
   margin-top: 8px;
-  margin-right: 24px;
+  margin-inline-end: 24px;
   width: fit-content;
   flex-direction: row;
   align-items: center;
   margin-bottom: 0;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 400;
+ 
   gap: 8px;
   line-height: 20px;
 
@@ -171,9 +171,9 @@ export const RadioInputLabel = styled.label<{$disabled: boolean}>`
 `;
 
 export const SectionTitle = styled.div`
-  font-family: 'Metropolis', sans-serif;
+  font-family: 'Effra_Trial_Rg', sans-serif;
   font-size: 16px;
-  font-weight: 600;
+  
   line-height: 24px;
   display: flex;
   align-items: center;
@@ -182,10 +182,10 @@ export const SectionTitle = styled.div`
 
 export const UnavailableSubtitle = styled.div`
   color: var(--center-channel-color-72);
-  font-family: "Open Sans";
+  font-family: " 'Effra_Trial_Rg'";
   font-size: 14px;
   font-style: italic;
-  font-weight: 400;
+ 
   line-height: 20px;
 `;
 

@@ -31,7 +31,7 @@ describe('EnableSimulcast', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableSimulcast: true,
                 },
@@ -42,7 +42,7 @@ describe('EnableSimulcast', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableSimulcast
                         {...baseProps}
                         {...props}
@@ -83,7 +83,7 @@ describe('EnableSimulcast', () => {
 
     it('should handle overridden false value correctly', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableSimulcast: false,
                 },
@@ -126,7 +126,7 @@ describe('EnableSimulcast', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableSimulcast: true,
                 },

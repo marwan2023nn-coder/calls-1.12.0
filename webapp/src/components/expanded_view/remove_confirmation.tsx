@@ -54,7 +54,7 @@ const StyledLeftButton = styled(DefaultLeftButton)`
     font-size: 12px;
     line-height: 16px;
     padding: 8px 16px;
-    margin-right: 4px;
+    margin-inline-end: 4px;
 
     &:hover {
         background: rgba(var(--dnd-indicator-rgb), 0.9);
@@ -67,7 +67,7 @@ const StyledRightButton = styled(DefaultRightButton)`
     font-size: 12px;
     line-height: 16px;
     padding: 8px 16px;
-    margin-left: 0;
+   margin-inline-start: 0;
 
     &:hover {
         background: rgba(var(--button-bg-rgb), 0.04);

@@ -1,6 +1,7 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+// @ts-ignore: Side-effect import for styles without type declarations
 import './component.scss';
 
 import {Channel} from '@mattermost/types/channels';
@@ -29,8 +30,8 @@ export default class SwitchCallModal extends React.PureComponent<Props> {
         main: {
             position: 'absolute',
             top: 0,
-            left: 0,
-            right: 0,
+            insetInlineStart: 0,
+            insetInlineEnd: 0,
             bottom: 0,
             display: 'flex',
             justifyContent: 'center',
@@ -60,8 +61,8 @@ export default class SwitchCallModal extends React.PureComponent<Props> {
             paddingBottom: '8px',
         },
         title: {
-            fontWeight: 600,
-            fontFamily: 'Metropolis',
+
+            fontFamily: 'Effra_Trial_Rg',
             fontSize: '22px',
             lineHeight: '28px',
         },
@@ -129,19 +130,19 @@ export default class SwitchCallModal extends React.PureComponent<Props> {
             message1 = (<React.Fragment>
                 {formatMessage({defaultMessage: 'You\'re already in a call with {participant}.'}, {
                     participant: (
-                        <span style={{fontWeight: 600}}>{getUserDisplayName(this.props.connectedDMUser)}</span>),
+                        <span >{getUserDisplayName(this.props.connectedDMUser)}</span>),
                 })}
             </React.Fragment>);
         } else if (isGMChannel(this.props.connectedChannel)) {
             message1 = (<React.Fragment>
                 {formatMessage({defaultMessage: 'You\'re already in a call with {participants}.'}, {
-                    participants: (<span style={{fontWeight: 600}}>{this.props.connectedChannel.display_name}</span>),
+                    participants: (<span >{this.props.connectedChannel.display_name}</span>),
                 })}
             </React.Fragment>);
         } else {
             message1 = (<React.Fragment>
                 {formatMessage({defaultMessage: 'You\'re already in a call in {channel}.'}, {
-                    channel: (<span style={{fontWeight: 600}}>{this.props.connectedChannel.display_name}</span>),
+                    channel: (<span >{this.props.connectedChannel.display_name}</span>),
                 })}
             </React.Fragment>);
         }
@@ -150,19 +151,19 @@ export default class SwitchCallModal extends React.PureComponent<Props> {
         if (isDMChannel(this.props.currentChannel)) {
             message2 = (<React.Fragment>
                 {formatMessage({defaultMessage: 'Do you want to leave and join a call with {user}?'}, {
-                    user: (<span style={{fontWeight: 600}}>{getUserDisplayName(this.props.currentDMUser)}</span>),
+                    user: (<span >{getUserDisplayName(this.props.currentDMUser)}</span>),
                 })}
             </React.Fragment>);
         } else if (isGMChannel(this.props.currentChannel)) {
             message2 = (<React.Fragment>
                 {formatMessage({defaultMessage: 'Do you want to leave and join a call with {users}?'}, {
-                    users: (<span style={{fontWeight: 600}}>{this.props.currentChannel?.display_name}</span>),
+                    users: (<span >{this.props.currentChannel?.display_name}</span>),
                 })}
             </React.Fragment>);
         } else {
             message2 = (<React.Fragment>
                 {formatMessage({defaultMessage: 'Do you want to leave and join a call in {channel}?'}, {
-                    channel: (<span style={{fontWeight: 600}}>{this.props.currentChannel?.display_name}</span>),
+                    channel: (<span >{this.props.currentChannel?.display_name}</span>),
                 })}
             </React.Fragment>);
         }

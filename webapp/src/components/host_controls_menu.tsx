@@ -98,4 +98,5 @@ export const HostControlsMenu = ({
 
 const RedText = styled.span`
     color: var(--dnd-indicator);
+    font-family: 'Effra_Trial_Rg';
 `;

@@ -228,7 +228,7 @@ const MuteIconWrapper = styled.div<{$isMuted: boolean, $padding: number, $size: 
   justify-content: center;
   align-items: center;
   bottom: 0;
-  right: 0;
+  insetInlineEnd: 0;
   border-radius: 20px;
   padding: ${({$padding}) => $padding}px;
   background: ${({$isMuted}) => $isMuted ? 'color-mix(in srgb, var(--calls-bg), var(--button-color) 12%)' : '#3DB887'};
@@ -241,7 +241,7 @@ const MuteIconWrapper = styled.div<{$isMuted: boolean, $padding: number, $size: 
 `;
 
 const StyledName = styled.span<{$fontSize: number, $lineHeight: number}>`
-  font-weight: 600;
+  
   text-align: center;
   font-size: ${({$fontSize}) => $fontSize}px;
   line-height: ${({$lineHeight}) => $lineHeight}px;
@@ -260,7 +260,7 @@ const ReactionWrapper = styled.div<{$isHandRaised: boolean, $padding: number, $s
   justify-content: center;
   align-items: center;
   bottom: 0;
-  left: 0;
+  insetInlineStart: 0;
   border-radius: 20px;
   padding: ${({$padding}) => $padding}px;
   background: ${({$isHandRaised}) => $isHandRaised ? 'white' : 'color-mix(in srgb, var(--calls-bg), var(--button-color) 12%)'};
@@ -306,5 +306,5 @@ const StyledDotMenuButton = styled(DotMenuButton)`
 const StyledDotMenu = styled(DotMenu)<{$pos: number}>`
     position: absolute;
     top: ${({$pos}) => $pos}px;
-    right: ${({$pos}) => $pos}px;
+    insetInlineEnd: ${({$pos}) => $pos}px;
 `;

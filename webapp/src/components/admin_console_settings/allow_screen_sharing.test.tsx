@@ -31,7 +31,7 @@ describe('AllowScreenSharing', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     AllowScreenSharing: true,
                 },
@@ -42,7 +42,7 @@ describe('AllowScreenSharing', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <AllowScreenSharing
                         {...baseProps}
                         {...props}
@@ -83,7 +83,7 @@ describe('AllowScreenSharing', () => {
 
     it('should handle overridden false value correctly', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     AllowScreenSharing: false,
                 },
@@ -126,7 +126,7 @@ describe('AllowScreenSharing', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     AllowScreenSharing: true,
                 },

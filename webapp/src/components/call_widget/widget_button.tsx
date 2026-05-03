@@ -4,7 +4,6 @@
 import React, {CSSProperties, useRef, useState} from 'react';
 import {Overlay, OverlayProps} from 'react-bootstrap';
 import {StyledTooltip} from 'src/components/shared';
-import Shortcut from 'src/components/shortcut';
 import styled, {css} from 'styled-components';
 
 import UnavailableIconWrapper from './unavailable_icon_wrapper';
@@ -76,9 +75,6 @@ export default function WidgetButton(props: Props) {
                         <TooltipSubtext>
                             {props.tooltipSubtext}
                         </TooltipSubtext>
-                    }
-                    {props.shortcut &&
-                        <Shortcut shortcut={props.shortcut}/>
                     }
                 </StyledTooltip>
             </Overlay>

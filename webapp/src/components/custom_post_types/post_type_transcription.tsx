@@ -38,7 +38,7 @@ const CreateMeetingSummaryButton = styled.button`
 	background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
 	font-size: 12px;
-	font-weight: 600;
+	
 	line-height: 16px;
 
 	&:hover {

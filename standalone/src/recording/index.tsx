@@ -1,6 +1,8 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+import './global.scss';
+
 import {CallState, CallStateData, JobStopData, UserJoinedData, WebsocketEventData} from '@mattermost/calls-common/lib/types';
 import {WebSocketMessage} from '@mattermost/client/websocket';
 import {ChannelTypes} from 'mattermost-redux/action_types';
@@ -78,7 +80,7 @@ async function initRecordingStore(store: Store, channelID: string) {
 async function initRecording({store, theme}: InitCbProps) {
     setCallsGlobalCSSVars(theme.sidebarBg);
 
-    const locale = getCurrentUserLocale(store.getState()) || 'en';
+    const locale = getCurrentUserLocale(store.getState()) || 'ar';
 
     const rootEl = document.getElementById('root');
     if (rootEl) {
@@ -88,7 +90,7 @@ async function initRecording({store, theme}: InitCbProps) {
                 <IntlProvider
                     locale={locale}
                     key={locale}
-                    defaultLocale='en'
+                    defaultLocale='ar'
                     messages={getTranslations(locale)}
                 >
                     <RecordingView/>

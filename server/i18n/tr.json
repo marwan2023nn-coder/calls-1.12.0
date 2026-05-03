@@ -5,7 +5,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.enterprise",
-        "translation": "Ana Mattermost sunucunuzun performansını, ölçeklenebilirliğini ve güvenilirliğini korumak amacıyla çağrı işlemeyi ayrı bir örneğe boşaltmak için [RTCD hizmetini dağıtmanızı] (https://mattermost.com/pl/calls-deployment-the-rtcd-service) önemle tavsiye ederiz."
+        "translation": "Ana Mattermost sunucunuzun performansını, ölçeklenebilirliğini ve güvenilirliğini korumak amacıyla çağrı işlemeyi ayrı bir örneğe boşaltmak için [RTCD hizmetini dağıtmanızı] (https://workspace.com/pl/calls-deployment-the-rtcd-service) önemle tavsiye ederiz."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
@@ -33,11 +33,11 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
-        "translation": "Ana Mattermost sunucunuzun performansını, ölçeklenebilirliğini ve güvenilirliğini korumak amacıyla çağrı işlemeyi ayrı bir örneğe boşaltmak için [Enterprise](https://mattermost.com/pricing/) sürümüne yükseltmenizi ve [RTCD hizmetini dağıtmanızı](https://mattermost.com/pl/calls-deployment-the-rtcd-service) önemle tavsiye ederiz."
+        "translation": "Ana Mattermost sunucunuzun performansını, ölçeklenebilirliğini ve güvenilirliğini korumak amacıyla çağrı işlemeyi ayrı bir örneğe boşaltmak için [Enterprise](https://workspace.com/pricing/) sürümüne yükseltmenizi ve [RTCD hizmetini dağıtmanızı](https://workspace.com/pl/calls-deployment-the-rtcd-service) önemle tavsiye ederiz."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",
-        "translation": "Ana Mattermost sunucunuzun performansını, ölçeklenebilirliğini ve güvenilirliğini korumak amacıyla çağrı işlemeyi ayrı bir örneğe boşaltmak için [Mattermost Enterprise Edition](https://mattermost.com/pl/install-enterprise-install-upgrade)'a geçmenizi ve [RTCD hizmetini dağıtmanızı](https://mattermost.com/pl/calls-deployment-the-rtcd-service) önemle tavsiye ederiz."
+        "translation": "Ana Mattermost sunucunuzun performansını, ölçeklenebilirliğini ve güvenilirliğini korumak amacıyla çağrı işlemeyi ayrı bir örneğe boşaltmak için [Mattermost Enterprise Edition](https://workspace.com/pl/install-enterprise-install-upgrade)'a geçmenizi ve [RTCD hizmetini dağıtmanızı](https://workspace.com/pl/calls-deployment-the-rtcd-service) önemle tavsiye ederiz."
     },
     {
         "id": "app.save_config.error",

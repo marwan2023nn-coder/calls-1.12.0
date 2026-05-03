@@ -131,6 +131,7 @@ import {PostTypeTranscription} from './components/custom_post_types/post_type_tr
 import ExpandedView from './components/expanded_view';
 import CompassIcon from './components/icons/compassIcon';
 import ScreenSourceModal from './components/screen_source_modal';
+import {CallsTooltipStyle} from './components/shared';
 import SwitchCallModal from './components/switch_call_modal';
 import {
     handleDesktopJoinedCall,
@@ -394,10 +395,11 @@ export default class Plugin {
         registry.registerGlobalComponent(injectIntl(SwitchCallModal));
         registry.registerGlobalComponent(injectIntl(ScreenSourceModal));
         registry.registerGlobalComponent(injectIntl(IncomingCallContainer));
+        registry.registerGlobalComponent(CallsTooltipStyle);
 
         registry.registerUserSettings({
             id: pluginId,
-            uiName: 'Calls',
+            uiName: 'المكالمات',
             icon: 'icon-phone-in-talk',
             sections: [
                 {
@@ -594,7 +596,7 @@ export default class Plugin {
         registry.registerSiteStatisticsHandler(async () => {
             let stats: Record<string, PluginAnalyticsRow> = {};
             try {
-                const locale = getCurrentUserLocale(store.getState()) || 'en';
+                const locale = getCurrentUserLocale(store.getState()) || 'ar';
                 stats = convertStatsToPanels(await getCallsStats(), getServerVersion(store.getState()), getTranslations(locale));
             } catch (err) {
                 logErr(err);
@@ -714,7 +716,7 @@ export default class Plugin {
                 });
                 window.currentCallData = CurrentCallDataDefault;
 
-                const locale = getCurrentUserLocale(state) || 'en';
+                const locale = getCurrentUserLocale(state) || 'ar';
 
                 let callWidgetRoot: Root | null = null;
                 const callsRootEl = document.getElementById('calls');
@@ -725,7 +727,7 @@ export default class Plugin {
                             <IntlProvider
                                 locale={locale}
                                 key={locale}
-                                defaultLocale='en'
+                                defaultLocale='ar'
                                 messages={getTranslations(locale)}
                             >
                                 <CallWidget/>
@@ -1042,7 +1044,7 @@ export default class Plugin {
             }
             registry.registerUserSettings({
                 id: pluginId,
-                uiName: 'Calls',
+                uiName: 'المكالمات',
                 icon: 'icon-phone-in-talk',
                 sections,
             });
@@ -1071,7 +1073,7 @@ export default class Plugin {
             if (currentCallChannelID) {
                 if (wsClient) {
                     logDebug('requesting call state through ws');
-                    wsClient.sendMessage('custom_com.mattermost.calls_call_state', {channelID: currentCallChannelID});
+                    wsClient.sendMessage('custom_com.workspace.calls_call_state', {channelID: currentCallChannelID});
                 } else {
                     logErr('unexpected missing wsClient');
                 }

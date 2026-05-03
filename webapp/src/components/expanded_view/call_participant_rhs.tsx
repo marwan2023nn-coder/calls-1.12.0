@@ -42,7 +42,7 @@ const CallParticipantRHS = ({session, profile, isYou, isHost, iAmHost, isSharing
     const isHandRaised = Boolean(session.raised_hand > 0);
     let youStyle: CSSProperties = {color: 'rgba(var(--center-channel-color-rgb), 0.56)'};
     if (isYou && isHost) {
-        youStyle = {...youStyle, marginLeft: '2px'};
+        youStyle = {...youStyle, marginInlineStart: '2px'};
     }
 
     if (!profile) {
@@ -72,7 +72,7 @@ const CallParticipantRHS = ({session, profile, isYou, isHost, iAmHost, isSharing
                     whiteSpace: 'pre',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    fontWeight: 600,
+                    textAlign: 'start',
                     fontSize: '14px',
                     lineHeight: '20px',
                 }}
@@ -81,7 +81,7 @@ const CallParticipantRHS = ({session, profile, isYou, isHost, iAmHost, isSharing
             </span>
 
             {(isYou || isHost) &&
-                <span style={{marginLeft: -4, display: 'flex', alignItems: 'baseline', gap: 5}}>
+                <span style={{marginInlineStart: -4, display: 'flex', alignItems: 'baseline', gap: 5}}>
                     {isYou &&
                         <span style={youStyle}>
                             {formatMessage({defaultMessage: '(you)'})}
@@ -98,7 +98,7 @@ const CallParticipantRHS = ({session, profile, isYou, isHost, iAmHost, isSharing
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    marginLeft: 'auto',
+                    marginInlineStart: 'auto',
                     gap: '12px',
                 }}
             >
@@ -185,7 +185,7 @@ const ParticipantListItem = styled.li<{ $hover: boolean }>`
 
 const StyledDotMenu = styled(DotMenu)`
     display: flex;
-    margin-right: -4px;
+    margin-inline-end: -4px;
 `;
 
 const StyledThreeDotsButton = styled(ThreeDotsButton)`

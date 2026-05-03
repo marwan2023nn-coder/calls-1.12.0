@@ -31,7 +31,7 @@ describe('EnableTranscriptions', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -50,7 +50,7 @@ describe('EnableTranscriptions', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableTranscriptions
                         {...baseProps}
                         {...props}
@@ -62,7 +62,7 @@ describe('EnableTranscriptions', () => {
 
     it('should render correctly with default value', () => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -80,7 +80,7 @@ describe('EnableTranscriptions', () => {
 
         render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableTranscriptions {...baseProps}/>
                 </IntlProvider>
             </Provider>,
@@ -114,7 +114,7 @@ describe('EnableTranscriptions', () => {
 
     it('should handle overridden false value correctly', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: false,
@@ -158,7 +158,7 @@ describe('EnableTranscriptions', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -176,7 +176,7 @@ describe('EnableTranscriptions', () => {
 
     it('should not render when recordings are disabled', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: false,
                     EnableTranscriptions: true,
@@ -190,7 +190,7 @@ describe('EnableTranscriptions', () => {
 
     it('should not render on cloud', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -212,7 +212,7 @@ describe('EnableTranscriptions', () => {
 
     it('should not render when not enterprise', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,

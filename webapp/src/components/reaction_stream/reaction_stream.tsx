@@ -125,7 +125,7 @@ const ReactionChip = styled.div<chipProps>`
     background: rgba(255, 255, 255, 0.16);
     border-radius: 16px;
     width: fit-content;
-    font-weight: 600;
+    
     font-size: 14px;
     line-height: 20px;
 
@@ -136,5 +136,5 @@ const ReactionChip = styled.div<chipProps>`
 `;
 
 const Bold = styled.span`
-    font-weight: 600;
+    
 `;

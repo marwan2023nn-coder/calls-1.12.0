@@ -1,6 +1,7 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+// @ts-ignore: Side-effect import for styles without type declarations
 import './component.scss';
 
 import {UserSessionState} from '@mattermost/calls-common/lib/types';
@@ -105,7 +106,10 @@ const styles: Record<string, React.CSSProperties> = ({
         position: 'sticky',
         top: '0',
         transform: 'translateY(-8px)',
-        padding: '8px 0 0 20px',
+        paddingBlockStart: '8px',
+        paddingInlineStart: '20px',
+        paddingInlineEnd: '0',
+        paddingBlockEnd: '0',
         color: 'var(--center-channel-color)',
         background: 'var(--center-channel-bg)',
 
@@ -117,12 +121,12 @@ const styles: Record<string, React.CSSProperties> = ({
 const MuteOthersButton = styled.button`
     display: flex;
     padding: 4px 10px;
-    margin-right: 8px;
-    margin-left: auto;
+    margin-inline-end: 8px;
+   margin-inline-start: auto;
     gap: 6px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Effra_Trial_Rg';
     font-size: 11px;
-    font-weight: 600;
+
     line-height: 16px;
     color: var(--button-bg);
     align-items: center;

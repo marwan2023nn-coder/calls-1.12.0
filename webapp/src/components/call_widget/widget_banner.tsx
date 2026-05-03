@@ -191,7 +191,7 @@ const Header = styled.div`
 
 const HeaderText = styled.span`
     flex: 1;
-    font-weight: 600;
+    
 `;
 
 const Body = styled.div`
@@ -202,7 +202,7 @@ const Body = styled.div`
 
 const BodyText = styled.div`
     flex: 1;
-    font-weight: 400;
+   
 `;
 
 const Footer = styled.div`
@@ -213,18 +213,18 @@ const Footer = styled.div`
 
 export const DefaultLeftButton = styled.button`
     color: var(--button-bg);
-    font-weight: 600;
+    
     padding: 4px 10px;
-    margin-right: 2px;
+    margin-inline-end: 2px;
     border-radius: 4px;
     background: rgba(var(--center-channel-color-rgb), 0.08);
 `;
 
 export const DefaultRightButton = styled.button`
     color: var(--dnd-indicator);
-    font-weight: 600;
+    
     padding: 4px 10px;
-    margin-left: 2px;
+   margin-inline-start: 2px;
     border-radius: 4px;
     background: rgba(var(--dnd-indicator-rgb), 0.08);
 `;

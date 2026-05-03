@@ -66,7 +66,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                 <FormattedMessage
                                     defaultMessage={'Use your own WebRTC service'}
                                 />
-                                <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>
+                                <EnterprisePill>{untranslatable('المؤسسات')}</EnterprisePill>
                             </Title>
                             <VerticalSpacer $size={8}/>
                             <Text>
@@ -75,7 +75,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                     values={{
                                         featureLink: (text: React.ReactNode) => (
                                             <a
-                                                href='https://mattermost.com/pl/calls-deployment-the-rtcd-service?utm_source=mattermost&utm_medium=in-product&utm_content=calls_rtcd_feature_discovery'
+                                                href='https://workspace.com/pl/calls-deployment-the-rtcd-service?utm_source=mattermost&utm_medium=in-product&utm_content=calls_rtcd_feature_discovery'
                                                 target='_blank'
                                                 rel='noreferrer'
                                             >
@@ -99,7 +99,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                             b: (text: React.ReactNode) => <b>{text}</b>,
                                             linkEvaluation: (text: React.ReactNode) => (
                                                 <a
-                                                    href='https://mattermost.com/software-evaluation-agreement'
+                                                    href='https://workspace.com/software-evaluation-agreement'
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
@@ -108,7 +108,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                             ),
                                             linkPrivacy: (text: React.ReactNode) => (
                                                 <a
-                                                    href='https://mattermost.com/privacy-policy/'
+                                                    href='https://workspace.com/privacy-policy/'
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
@@ -136,7 +136,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'RTCD Service'})}
-                            {!cloud && <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
+                            {!cloud && <EnterprisePill>{untranslatable('المؤسسات')}</EnterprisePill>}
                         </SectionTitle>
                         <div className='section-subtitle'>
                             {formatMessage({defaultMessage: 'Configure a dedicated service used to offload calls and efficiently support scalable and secure deployments'})}

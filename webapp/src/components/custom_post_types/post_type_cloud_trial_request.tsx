@@ -63,7 +63,7 @@ export const PostTypeCloudTrialRequest = ({post}: Props) => {
                             <FormattedMessage defaultMessage='Upgrade now'/>
                         </PrimaryButton>
                         <StyledTertiaryButton
-                            onClick={() => window.open('https://mattermost.com/pricing-cloud')}
+                            onClick={() => window.open('https://workspace.com/pricing-cloud')}
                         >
                             <FormattedMessage defaultMessage='Learn more'/>
                         </StyledTertiaryButton>
@@ -92,5 +92,5 @@ const StyledPostText = styled(PostText)`
 `;
 
 const StyledTertiaryButton = styled(TertiaryButton)`
-    margin-left: 10px;
+   margin-inline-start: 10px;
 `;

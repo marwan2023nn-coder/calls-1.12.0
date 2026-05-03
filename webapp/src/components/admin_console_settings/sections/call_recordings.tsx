@@ -71,7 +71,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                 <FormattedMessage
                                     defaultMessage={'Get access to call recordings, transcriptions, and live captions'}
                                 />
-                                <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>
+                                <EnterprisePill>{untranslatable('المؤسسات')}</EnterprisePill>
                             </Title>
                             <VerticalSpacer $size={8}/>
                             <Text>
@@ -80,7 +80,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                     values={{
                                         featureLink: (text: React.ReactNode) => (
                                             <a
-                                                href='https://mattermost.com/pl/calls-deployment-recordings?utm_source=mattermost&utm_medium=in-product&utm_content=calls_recordings_feature_discovery'
+                                                href='https://workspace.com/pl/calls-deployment-recordings?utm_source=workspace&utm_medium=in-product&utm_content=calls_recordings_feature_discovery'
                                                 target='_blank'
                                                 rel='noreferrer'
                                             >
@@ -99,12 +99,12 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                 <HorizontalSpacer $size={16}/>
                                 <FooterText>
                                     <FormattedMessage
-                                        defaultMessage={'By selecting <b>Try free for 30 days</b>, I agree to the <linkEvaluation>Mattermost Software Evaluation Agreement</linkEvaluation>, <linkPrivacy>Privacy Policy</linkPrivacy>, and receiving product emails.'}
+                                        defaultMessage={'By selecting <b>Try free for 30 days</b>, I agree to the <linkEvaluation>workspace Software Evaluation Agreement</linkEvaluation>, <linkPrivacy>Privacy Policy</linkPrivacy>, and receiving product emails.'}
                                         values={{
                                             b: (text: React.ReactNode) => <b>{text}</b>,
                                             linkEvaluation: (text: React.ReactNode) => (
                                                 <a
-                                                    href='https://mattermost.com/software-evaluation-agreement'
+                                                    href='https://workspace.com/software-evaluation-agreement'
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
@@ -113,7 +113,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                             ),
                                             linkPrivacy: (text: React.ReactNode) => (
                                                 <a
-                                                    href='https://mattermost.com/privacy-policy/'
+                                                    href='https://workspace.com/privacy-policy/'
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
@@ -141,10 +141,10 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'Call recordings'})}
-                            {!cloud && <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
+                            {!cloud && <EnterprisePill>{untranslatable('المؤسسات')}</EnterprisePill>}
                         </SectionTitle>
                         <div className='section-subtitle'>
-                            {formatMessage({defaultMessage: 'Recordings include the entire call window view along with participants’ audio track and any shared screen video. Recordings are stored in Mattermost'})}
+                            {formatMessage({defaultMessage: 'تشمل التسجيلات عرض نافذة المكالمة بالكامل مع المسار الصوتي للمشاركين وأي فيديو لشاشة مشتركة. يتم تخزين التسجيلات في مساحة العمل'})}
                         </div>
                     </div>
                     <div className='section-body'>

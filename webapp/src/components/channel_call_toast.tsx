@@ -42,7 +42,7 @@ const ChannelCallToast = () => {
         <div
             id='calls-channel-toast'
             className='toast toast__visible'
-            style={{backgroundColor: '#339970'}}
+            style={{backgroundColor: '#00987e'}}
         >
             <div
                 className='toast__message toast__pointer'
@@ -50,10 +50,10 @@ const ChannelCallToast = () => {
             >
                 <div style={{position: 'absolute'}}>
                     <ActiveCallIcon
-                        fill='white'
+                        fill='var(--button-bg-rgb)'
                         style={{margin: '0 4px', width: '12px', height: '12px'}}
                     />
-                    <span style={{margin: '0 4px'}}>{intl.formatMessage({defaultMessage: 'Join call'})}</span>
+                    <span style={{margin: '0 4px'}}>{intl.formatMessage({defaultMessage: 'انضم إلى المكالمة'})}</span>
                     <span style={{opacity: '0.80', margin: '0 4px'}}>
                         {intl.formatMessage(
                             {defaultMessage: 'Started {callStartedAt}'},
@@ -78,7 +78,7 @@ const ChannelCallToast = () => {
                         display: 'flex',
                         alignItems: 'center',
                         height: '100%',
-                        right: '40px',
+                        insetInlineEnd: '40px',
                     }
                 }
             >

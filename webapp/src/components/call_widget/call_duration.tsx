@@ -39,9 +39,6 @@ export default function CallDuration(props: Props) {
     });
 
     const style = props.style || {};
-    if (!style.fontWeight) {
-        style.fontWeight = 600;
-    }
 
     return (
         <div style={style}>{getCallDuration(adjustedStartAt)}</div>

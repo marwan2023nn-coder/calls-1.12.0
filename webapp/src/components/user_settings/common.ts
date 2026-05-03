@@ -31,7 +31,7 @@ export const SelectionWrapper = styled.div`
 
 export const SelectLabel = styled.label`
   font-size: 14px;
-  font-weight: 400;
+ 
   line-height: 20px;
   margin: 0;
 `;

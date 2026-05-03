@@ -32,7 +32,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
             id={IDOnPremTrialSuccess}
             {...modalProps}
             confirmButtonText={formatMessage({defaultMessage: 'Set up call recordings'})}
-            handleConfirm={() => navigateToURL('/admin_console/plugins/plugin_com.mattermost.calls')}
+            handleConfirm={() => navigateToURL('/admin_console/plugins/plugin_com.workspace.calls')}
             onHide={() => null}
         >
             <HandsSvg
@@ -47,9 +47,9 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
                 />
             </ModalTitle>
             <VerticalSpacer $size={8}/>
-            <ModalBody css={'text-align: left'}>
+            <ModalBody css={'text-align: start'}>
                 <FormattedMessage
-                    defaultMessage={'Welcome to your Mattermost Enterprise trial! It expires on {trialExpirationDate}. ' +
+                    defaultMessage={'Welcome to your workspace Enterprise trial! It expires on {trialExpirationDate}. ' +
                         'You now have access to <recordingsDocsLink>Call recordings</recordingsDocsLink>,' +
                         '<rtcdDocsLink>RTCD services</rtcdDocsLink>, ' +
                         '<guestAccountsLink>guest accounts</guestAccountsLink>, ' +
@@ -61,7 +61,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
                         trialExpirationDate: trialEndDate,
                         recordingsDocsLink: (text: React.ReactNode) => (
                             <a
-                                href='https://mattermost.com/pl/calls-deployment-recordings?utm_source=mattermost&utm_medium=in-product&utm_content=calls_start_trial_form_modal'
+                                href='https://workspace.com/pl/calls-deployment-recordings?utm_source=mattermost&utm_medium=in-product&utm_content=calls_start_trial_form_modal'
                                 target='_blank'
                                 rel='noreferrer'
                             >
@@ -70,7 +70,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
                         ),
                         rtcdDocsLink: (text: React.ReactNode) => (
                             <a
-                                href='https://mattermost.com/pl/calls-deployment-the-rtcd-service?utm_source=mattermost&utm_medium=in-product&utm_content=calls_start_trial_form_modal'
+                                href='https://workspace.com/pl/calls-deployment-the-rtcd-service?utm_source=mattermost&utm_medium=in-product&utm_content=calls_start_trial_form_modal'
                                 target='_blank'
                                 rel='noreferrer'
                             >
@@ -100,7 +100,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
                         ),
                         documentationLink: (text: React.ReactNode) => (
                             <a
-                                href='https://mattermost.com/pl/calls-deployment?utm_source=mattermost&utm_medium=in-product&utm_content=calls_start_trial_form_modal'
+                                href='https://workspace.com/pl/calls-deployment?utm_source=mattermost&utm_medium=in-product&utm_content=calls_start_trial_form_modal'
                                 target='_blank'
                                 rel='noreferrer'
                             >
@@ -137,7 +137,7 @@ export const OnPremTrialError = (modalProps: Props) => {
                     values={{
                         supportLink: (text: React.ReactNode) => (
                             <a
-                                href='https://mattermost.com/support/'
+                                href='https://workspace.com/support/'
                                 target='_blank'
                                 rel='noreferrer'
                             >

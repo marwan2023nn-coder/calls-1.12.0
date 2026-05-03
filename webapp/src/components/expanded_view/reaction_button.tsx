@@ -18,9 +18,8 @@ import HandEmoji from 'src/components/icons/hand';
 import SmileyIcon from 'src/components/icons/smiley_icon';
 import UnraisedHandIcon from 'src/components/icons/unraised_hand';
 import {StyledTooltip} from 'src/components/shared';
-import Shortcut from 'src/components/shortcut';
 import {EmojiIndicesByAlias} from 'src/emojis/emoji';
-import {MAKE_REACTION, RAISE_LOWER_HAND, reverseKeyMappings} from 'src/shortcuts';
+import {MAKE_REACTION, reverseKeyMappings} from 'src/shortcuts';
 import {getCallsClient} from 'src/utils';
 import styled, {css} from 'styled-components';
 
@@ -151,7 +150,6 @@ export const ReactionButton = forwardRef(({isHandRaised}: Props, ref) => {
                         overlay={
                             <StyledTooltip id={'tooltip-calls-popout-raisehand-button'}>
                                 <div>{raiseHandText}</div>
-                                <Shortcut shortcut={reverseKeyMappings.popout[RAISE_LOWER_HAND][0]}/>
                             </StyledTooltip>
                         }
                     >
@@ -265,7 +263,7 @@ const PickerContainer = styled.div`
     position: absolute;
     z-index: 10;
     top: -394px;
-    left: -242px;
+    insetInlineStart: -242px;
 
     // style the emoji selector
     &&&&&& {
@@ -292,7 +290,7 @@ const Bar = styled.div`
     position: absolute;
     z-index: 10;
     top: -68px;
-    left: -242px;
+    insetInlineStart: -242px;
     width: 416px;
     display: flex;
     justify-content: center;
@@ -315,9 +313,9 @@ const HandsButton = styled.button<{ $active: boolean }>`
     padding: 10px;
     gap: 4px;
 
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Effra_Trial_Rg';
     font-style: normal;
-    font-weight: 600;
+    
     font-size: 16px;
     line-height: 16px;
 

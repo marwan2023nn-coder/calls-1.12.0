@@ -90,7 +90,7 @@ const Banner = styled.div<{ $color: string, $bgColor: string }>`
 `;
 
 const Body = styled.span`
-    font-weight: 600;
+    
     line-height: 20px;
 `;
 
@@ -108,9 +108,9 @@ const CloseButton = styled.button<{ $bgHover: string }>`
 `;
 
 const Icon = styled.div`
-    margin-left: auto;
+   margin-inline-start: auto;
 `;
 
 const RightFiller = styled.div`
-    margin-left: auto;
+   margin-inline-start: auto;
 `;

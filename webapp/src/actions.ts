@@ -681,7 +681,7 @@ export const selectRHSPost = (postID: string): ActionFuncAsync => {
 export const openCallsUserSettings = (): ActionFuncAsync => {
     return async (dispatch: DispatchFunc) => {
         if (window.WebappUtils && window.WebappUtils.openUserSettings) {
-            dispatch(window.WebappUtils.openUserSettings({activeTab: 'com.mattermost.calls', isContentProductSettings: true}));
+            dispatch(window.WebappUtils.openUserSettings({activeTab: 'com.workspace.calls', isContentProductSettings: true}));
         }
         return {};
     };

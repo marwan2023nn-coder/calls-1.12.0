@@ -1,6 +1,8 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+import './global.scss';
+
 import {getChannel as getChannelAction, getChannelMembers} from 'mattermost-redux/actions/channels';
 import {getMyPreferences} from 'mattermost-redux/actions/preferences';
 import {getMyTeamMembers, getMyTeams, getTeam as getTeamAction, selectTeam} from 'mattermost-redux/actions/teams';
@@ -56,7 +58,7 @@ async function initWidget({store, startingCall}: InitCbProps) {
         sendDesktopEvent('get-app-version');
     }
 
-    const locale = getCurrentUserLocale(store.getState()) || 'en';
+    const locale = getCurrentUserLocale(store.getState()) || 'ar';
 
     window.callsClient?.on('mute', () => {
         store.dispatch({
@@ -110,7 +112,7 @@ async function initWidget({store, startingCall}: InitCbProps) {
                 <IntlProvider
                     locale={locale}
                     key={locale}
-                    defaultLocale='en'
+                    defaultLocale='ar'
                     messages={getTranslations(locale)}
                 >
                     <CallWidget

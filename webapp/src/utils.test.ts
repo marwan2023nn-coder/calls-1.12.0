@@ -457,8 +457,8 @@ describe('utils', () => {
                 captions: [
                     {
                         file_id: 'trAFileID',
-                        language: 'en',
-                        title: 'en',
+                        language: 'ar',
+                        title: 'ar',
                     },
                 ],
             };

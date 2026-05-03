@@ -20,7 +20,7 @@ export const CustomPostContent = styled.div`
 `;
 
 export const CustomPostHeader = styled.div`
-    font-weight: 600;
+    
     font-size: 16px;
     line-height: 24px;
 `;

@@ -50,7 +50,7 @@ const Key = styled.span`
   color: rgba(255, 255, 255, 0.72);
   font-family: inherit;
   font-size: 12px;
-  font-weight: 600;
+  
   margin: 0 2px;
 `;
 

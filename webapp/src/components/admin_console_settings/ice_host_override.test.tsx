@@ -31,7 +31,7 @@ describe('ICEHostOverride', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     ICEHostOverride: '192.168.1.1',
                 },
@@ -43,7 +43,7 @@ describe('ICEHostOverride', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <ICEHostOverride
                         {...baseProps}
                         {...props}
@@ -83,7 +83,7 @@ describe('ICEHostOverride', () => {
 
     it('should be disabled when RTCD is enabled', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     ICEHostOverride: '192.168.1.1',
                 },
@@ -99,7 +99,7 @@ describe('ICEHostOverride', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     ICEHostOverride: '192.168.1.1',
                 },

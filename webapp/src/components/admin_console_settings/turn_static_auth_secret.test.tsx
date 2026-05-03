@@ -31,7 +31,7 @@ describe('TURNStaticAuthSecret', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     TURNStaticAuthSecret: 'secret123',
                 },
@@ -42,7 +42,7 @@ describe('TURNStaticAuthSecret', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <TURNStaticAuthSecret
                         {...baseProps}
                         {...props}
@@ -82,7 +82,7 @@ describe('TURNStaticAuthSecret', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     TURNStaticAuthSecret: 'secret123',
                 },
