@@ -511,14 +511,12 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 			return fmt.Errorf("sharing session not found")
 		}
 
-		var remoteEvent interface{}
+		var remoteEvent map[string]any
 		if err := json.Unmarshal(msg.Data, &remoteEvent); err != nil {
 			return fmt.Errorf("failed to unmarshal remote control event: %w", err)
 		}
 
-		p.publishWebSocketEvent(wsEventRemoteControl, map[string]interface{}{
-			"event": remoteEvent,
-		}, &WebSocketBroadcast{UserID: sharingSession.UserID, ReliableClusterSend: true})
+		p.publishWebSocketEvent(wsEventRemoteControl, remoteEvent, &WebSocketBroadcast{UserID: sharingSession.UserID, ReliableClusterSend: true})
 	default:
 		return fmt.Errorf("invalid client message type %q", msg.Type)
 	}

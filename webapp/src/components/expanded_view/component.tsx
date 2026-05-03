@@ -1042,8 +1042,9 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     sendRemoteControlEvent = (event: Record<string, unknown>) => {
         const callsClient = getCallsClient();
         if (callsClient?.ws) {
-            // We send the event as a flat object.
-            callsClient.ws.send('remote_control', event);
+            callsClient.ws.send('remote_control', {
+                data: JSON.stringify(event),
+            });
         }
     };
 
@@ -1059,9 +1060,9 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
 
         ev.preventDefault();
 
-        // We don't want to stop propagation for mousemove events, otherwise
-        // the media controls will never be shown.
-        if (ev.type !== 'mousemove') {
+        // We don't want to stop propagation for mousemove and wheel events,
+        // otherwise the media controls will never be shown.
+        if (ev.type !== 'mousemove' && ev.type !== 'wheel') {
             ev.stopPropagation();
         }
 

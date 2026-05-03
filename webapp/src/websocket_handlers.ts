@@ -77,7 +77,6 @@ import {
     USER_VIDEO_ON,
     USER_VOICE_OFF,
     USER_VOICE_ON,
-    REMOTE_CONTROL,
 } from './action_types';
 import {logErr} from './log';
 import {
@@ -236,8 +235,8 @@ export function handleUserMuted(store: Store, ev: WebSocketMessage<UserMutedUnmu
     });
 }
 
-export function handleRemoteControl(store: Store, ev: WebSocketMessage<{ event: Record<string, unknown> }>) {
-    sendDesktopEvent('calls-send-remote-control-event', ev.data.event);
+export function handleRemoteControl(store: Store, ev: WebSocketMessage<Record<string, unknown>>) {
+    sendDesktopEvent('calls-send-remote-control-event', ev.data);
 }
 
 // NOTE: it's important this function is kept synchronous in order to guarantee the order of
