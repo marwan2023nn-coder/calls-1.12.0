@@ -65,6 +65,7 @@ import {
     handleCallJobState,
     handleCallStart,
     handleCallState,
+    handleRemoteControl,
     handleHostLowerHand,
     handleHostMute,
     handleHostRemoved,
@@ -320,6 +321,9 @@ export default async function init(cfg: InitConfig) {
             break;
         case `custom_${pluginId}_user_video_off`:
             handleUserVideoOff(store, ev as WebSocketMessage<UserVideoOnOffData>);
+            break;
+        case `custom_${pluginId}_remote_control`:
+            handleRemoteControl(store, ev as WebSocketMessage<Record<string, unknown>>);
             break;
         case 'user_removed':
             handleUserRemovedFromChannel(store, ev as WebSocketMessage<UserRemovedData>);

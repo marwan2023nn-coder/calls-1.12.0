@@ -1042,6 +1042,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     sendRemoteControlEvent = (event: Record<string, unknown>) => {
         const callsClient = getCallsClient();
         if (callsClient?.ws) {
+            logDebug('sendRemoteControlEvent', event);
             callsClient.ws.send('remote_control', {
                 data: JSON.stringify(event),
             });

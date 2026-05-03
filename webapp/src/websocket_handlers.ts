@@ -236,6 +236,7 @@ export function handleUserMuted(store: Store, ev: WebSocketMessage<UserMutedUnmu
 }
 
 export function handleRemoteControl(store: Store, ev: WebSocketMessage<Record<string, unknown>>) {
+    logDebug('handleRemoteControl', ev.data);
     sendDesktopEvent('calls-send-remote-control-event', ev.data);
 }
 
