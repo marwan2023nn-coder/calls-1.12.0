@@ -171,7 +171,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     private pushToTalk = false;
     private screenPlayer: HTMLVideoElement | null = null;
     private callQualityBannerLocked = false;
-    private lastMouseMoveTime = 0;
 
     static contextType = window.ProductApi.WebSocketProvider;
     declare context: React.ContextType<typeof window.ProductApi.WebSocketProvider>;
@@ -337,64 +336,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             node.srcObject = this.state.screenStream;
         }
         this.screenPlayer = node;
-    };
-
-    private onRemoteControlEvent = (ev: React.MouseEvent | React.KeyboardEvent | React.WheelEvent | KeyboardEvent) => {
-        const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
-        if (isSharing || !this.props.screenSharingSession) {
-            return;
-        }
-
-        if (ev.type === 'mousemove') {
-            const now = Date.now();
-            if (now - this.lastMouseMoveTime < 50) {
-                return;
-            }
-            this.lastMouseMoveTime = now;
-        }
-
-        const event: any = {
-            type: ev.type,
-        };
-
-        if ('button' in ev) {
-            event.button = ev.button;
-        }
-
-        if ('key' in ev) {
-            event.key = ev.key;
-            event.code = ev.code;
-        }
-
-        if ('ctrlKey' in ev) {
-            event.ctrlKey = ev.ctrlKey;
-            event.shiftKey = ev.shiftKey;
-            event.altKey = ev.altKey;
-            event.metaKey = ev.metaKey;
-        }
-
-        if ('deltaX' in ev) {
-            event.deltaX = ev.deltaX;
-            event.deltaY = ev.deltaY;
-        }
-
-        if (this.screenPlayer && 'clientX' in ev && (ev.type.startsWith('mouse') || ev.type === 'click')) {
-            const rect = this.screenPlayer.getBoundingClientRect();
-            const x = (ev.clientX - rect.left) / rect.width;
-            const y = (ev.clientY - rect.top) / rect.height;
-            if (x < 0 || x > 1 || y < 0 || y > 1) {
-                return;
-            }
-            event.x = x;
-            event.y = y;
-        }
-
-        getCallsClient()?.sendRemoteControlEvent(event);
-
-        if (ev.type.startsWith('key')) {
-            ev.preventDefault();
-            ev.stopPropagation();
-        }
     };
 
     setMissingScreenPermissions = (missing: boolean, forward?: boolean) => {
@@ -1135,16 +1076,8 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         ref={this.setScreenPlayerRef}
                         muted={true}
                         autoPlay={true}
-                        onClick={this.onRemoteControlEvent}
-                        onMouseDown={this.onRemoteControlEvent}
-                        onMouseUp={this.onRemoteControlEvent}
-                        onMouseMove={this.onRemoteControlEvent}
-                        onWheel={this.onRemoteControlEvent}
-                        tabIndex={0}
-                        onKeyDown={this.onRemoteControlEvent}
-                        onKeyUp={this.onRemoteControlEvent}
+                        onClick={(ev) => ev.preventDefault()}
                         controls={false}
-                        style={{outline: 'none'}}
                     />
                     <StyledMediaControlBar>
                         <StyledMediaFullscreenButton>
