@@ -42,7 +42,7 @@ describe('CallRecordingsSection', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='ar'>
+                <IntlProvider locale='en'>
                     <CallRecordingsSection settingsList={settingsList}/>
                 </IntlProvider>
             </Provider>,

@@ -201,6 +201,7 @@ import {
     handleUserVideoOn,
     handleUserVoiceOff,
     handleUserVoiceOn,
+    handleRemoteControl,
 } from './websocket_handlers';
 
 export default class Plugin {
@@ -330,6 +331,10 @@ export default class Plugin {
 
         registry.registerWebSocketEventHandler(`custom_${pluginId}_user_video_off`, (ev) => {
             handleUserVideoOff(store, ev);
+        });
+
+        registry.registerWebSocketEventHandler(`custom_${pluginId}_remote_control`, (ev) => {
+            handleRemoteControl(store, ev);
         });
     }
 
