@@ -1244,8 +1244,4 @@ export default class CallsClient extends EventEmitter {
     public getSessionID() {
         return this.ws?.getOriginalConnID();
     }
-
-    public sendRemoteControlEvent(event: any) {
-        this.ws?.send('remote_control', event);
-    }
 }

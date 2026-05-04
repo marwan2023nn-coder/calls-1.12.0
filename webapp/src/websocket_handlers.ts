@@ -235,15 +235,6 @@ export function handleUserMuted(store: Store, ev: WebSocketMessage<UserMutedUnmu
     });
 }
 
-export function handleRemoteControl(store: Store, ev: WebSocketMessage<any>) {
-    if (window.desktopAPI?.sendRemoteControlEvent) {
-        window.desktopAPI.sendRemoteControlEvent(ev.data);
-    } else {
-        // DEPRECATED: legacy Desktop API logic (<= 5.6.0)
-        sendDesktopEvent('calls-send-remote-control-event', ev.data);
-    }
-}
-
 // NOTE: it's important this function is kept synchronous in order to guarantee the order of
 // state mutating operations.
 export function handleUserUnmuted(store: Store, ev: WebSocketMessage<UserMutedUnmutedData>) {
