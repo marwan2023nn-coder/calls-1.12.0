@@ -651,6 +651,3 @@ export const clientConnecting = (state: GlobalState) => {
 
 export const callsVersionInfo = (state: GlobalState): CallsVersionInfo =>
     pluginState(state).callsVersionInfo;
-
-export const remoteControlStatus = (state: GlobalState): boolean =>
-    pluginState(state).remoteControlStatus;

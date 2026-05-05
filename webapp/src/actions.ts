@@ -71,7 +71,6 @@ import {
     SHOW_EXPANDED_VIEW,
     SHOW_SCREEN_SOURCE_MODAL,
     SHOW_SWITCH_CALL_MODAL,
-    REMOTE_CONTROL_STATUS,
     TRANSCRIBE_API,
     TRANSCRIPTIONS_ENABLED,
     USER_LEFT,
@@ -97,13 +96,6 @@ export const showSwitchCallModal = (targetID?: string) => (dispatch: Dispatch) =
         data: {
             targetID,
         },
-    });
-};
-
-export const setRemoteControlStatus = (status: boolean) => (dispatch: Dispatch) => {
-    dispatch({
-        type: REMOTE_CONTROL_STATUS,
-        data: status,
     });
 };
 

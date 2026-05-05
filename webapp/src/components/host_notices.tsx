@@ -4,9 +4,7 @@
 import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
-import {useDispatch, useSelector} from 'react-redux';
-import {setRemoteControlStatus} from 'src/actions';
-import {getCallsClient} from 'src/utils';
+import {useSelector} from 'react-redux';
 import CompassIcon from 'src/components/icons/compassIcon';
 import MonitorAccount from 'src/components/icons/monitor_account';
 import {HOST_CONTROL_NOTICE_TIMEOUT} from 'src/constants';
@@ -19,7 +17,6 @@ type Props = {
 }
 
 export const HostNotices = ({onWidget = false}: Props) => {
-    const dispatch = useDispatch();
     const currentUserId = useSelector(getCurrentUserId);
     const notices = useSelector(hostControlNoticesForCurrentCall);
 
@@ -92,39 +89,6 @@ export const HostNotices = ({onWidget = false}: Props) => {
                                     }}
                                 />
                             </Text>
-                        </Notice>
-                    );
-                case HostControlNoticeType.RemoteControlRequest:
-                    return (
-                        <Notice
-                            key={n.noticeID}
-                            data-testid={'notice-remote-control-request'}
-                            $onWidget={onWidget}
-                        >
-                            <StyledCompassIcon
-                                icon={'monitor'}
-                                $onWidget={onWidget}
-                            />
-                            <Text $onWidget={onWidget}>
-                                <FormattedMessage
-                                    defaultMessage={'<b>{name}</b> wants remote control'}
-                                    values={{
-                                        b: (text: React.ReactNode) => <b>{text}</b>,
-                                        name: n.displayName,
-                                    }}
-                                />
-                            </Text>
-                            <GrantButton
-                                onClick={() => {
-                                    dispatch(setRemoteControlStatus(true));
-                                    getCallsClient()?.sendRemoteControlEvent({
-                                        type: 'grant',
-                                        userID: n.userID,
-                                    });
-                                }}
-                            >
-                                <FormattedMessage defaultMessage={'Grant'}/>
-                            </GrantButton>
                         </Notice>
                     );
                 default:
@@ -209,18 +173,4 @@ const Text = styled.span<{ $onWidget?: boolean }>`
         font-family: 'Effra_Trial_Rg';
         color: var(--center-channel-color);
     `}
-`;
-
-const GrantButton = styled.button`
-    border: none;
-    background: var(--button-bg);
-    color: var(--button-color);
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 12px;
-    cursor: pointer;
-
-    &:hover {
-        background: rgba(var(--button-bg-rgb), 0.8);
-    }
 `;

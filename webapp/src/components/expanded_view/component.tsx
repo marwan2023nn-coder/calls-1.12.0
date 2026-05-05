@@ -129,7 +129,6 @@ interface Props extends RouteComponentProps {
     transcriptionsEnabled: boolean,
     isAdmin: boolean,
     hostControlsAllowed: boolean,
-    remoteControlStatus: boolean,
     openModal: <P>(modalData: ModalData<P>) => void;
     enableVideo: boolean;
     otherSessions: UserSessionState[];
@@ -144,7 +143,6 @@ interface State {
     alerts: CallAlertStates,
     removeConfirmation: RemoveConfirmationData | null,
     viewState: 'grid' | 'speaker',
-    isRemoteControlActive: boolean,
 }
 
 const StyledMediaController = styled(MediaController)`
@@ -173,7 +171,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     private expandedRootRef = React.createRef<HTMLDivElement>();
     private pushToTalk = false;
     private screenPlayer: HTMLVideoElement | null = null;
-    private lastMouseMoveTime = 0;
     private callQualityBannerLocked = false;
 
     static contextType = window.ProductApi.WebSocketProvider;
@@ -296,7 +293,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             alerts: CallAlertStatesDefault,
             removeConfirmation: null,
             viewState: 'speaker',
-            isRemoteControlActive: false,
         };
 
         if (window.opener) {
@@ -522,17 +518,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         }
     };
 
-    onRequestRemoteControl = () => {
-        if (this.state.isRemoteControlActive) {
-            this.setState({isRemoteControlActive: false});
-            return;
-        }
-
-        getCallsClient()?.sendRemoteControlEvent({
-            type: 'request',
-        });
-    };
-
     onShareScreenToggle = async () => {
         if (!this.props.allowScreenSharing) {
             return;
@@ -600,123 +585,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         });
     };
 
-    handleRemoteMouseMove = (ev: React.MouseEvent<HTMLVideoElement>) => {
-        if (!this.state.isRemoteControlActive) {
-            return;
-        }
-
-        const now = Date.now();
-        if (now - this.lastMouseMoveTime < 50) {
-            return;
-        }
-        this.lastMouseMoveTime = now;
-
-        const rect = ev.currentTarget.getBoundingClientRect();
-        const x = (ev.clientX - rect.left) / rect.width;
-        const y = (ev.clientY - rect.top) / rect.height;
-
-        getCallsClient()?.sendRemoteControlEvent({
-            type: 'mouse',
-            event: 'mousemove',
-            x,
-            y,
-        });
-    };
-
-    handleRemoteMouseDown = (ev: React.MouseEvent<HTMLVideoElement>) => {
-        if (!this.state.isRemoteControlActive) {
-            return;
-        }
-
-        const rect = ev.currentTarget.getBoundingClientRect();
-        const x = (ev.clientX - rect.left) / rect.width;
-        const y = (ev.clientY - rect.top) / rect.height;
-
-        getCallsClient()?.sendRemoteControlEvent({
-            type: 'mouse',
-            event: 'mousedown',
-            button: ev.button,
-            x,
-            y,
-        });
-    };
-
-    handleRemoteMouseUp = (ev: React.MouseEvent<HTMLVideoElement>) => {
-        if (!this.state.isRemoteControlActive) {
-            return;
-        }
-
-        const rect = ev.currentTarget.getBoundingClientRect();
-        const x = (ev.clientX - rect.left) / rect.width;
-        const y = (ev.clientY - rect.top) / rect.height;
-
-        getCallsClient()?.sendRemoteControlEvent({
-            type: 'mouse',
-            event: 'mouseup',
-            button: ev.button,
-            x,
-            y,
-        });
-    };
-
-    handleRemoteWheel = (ev: React.WheelEvent<HTMLVideoElement>) => {
-        if (!this.state.isRemoteControlActive) {
-            return;
-        }
-
-        getCallsClient()?.sendRemoteControlEvent({
-            type: 'mouse',
-            event: 'wheel',
-            deltaX: ev.deltaX,
-            deltaY: ev.deltaY,
-        });
-    };
-
-    handleRemoteKeyDown = (ev: React.KeyboardEvent<HTMLVideoElement>) => {
-        if (!this.state.isRemoteControlActive) {
-            return;
-        }
-
-        ev.preventDefault();
-        ev.stopPropagation();
-
-        getCallsClient()?.sendRemoteControlEvent({
-            type: 'keyboard',
-            event: 'keydown',
-            key: ev.key,
-            code: ev.code,
-            shiftKey: ev.shiftKey,
-            ctrlKey: ev.ctrlKey,
-            altKey: ev.altKey,
-            metaKey: ev.metaKey,
-        });
-    };
-
-    handleRemoteKeyUp = (ev: React.KeyboardEvent<HTMLVideoElement>) => {
-        if (!this.state.isRemoteControlActive) {
-            return;
-        }
-
-        ev.preventDefault();
-        ev.stopPropagation();
-
-        getCallsClient()?.sendRemoteControlEvent({
-            type: 'keyboard',
-            event: 'keyup',
-            key: ev.key,
-            code: ev.code,
-            shiftKey: ev.shiftKey,
-            ctrlKey: ev.ctrlKey,
-            altKey: ev.altKey,
-            metaKey: ev.metaKey,
-        });
-    };
-
     public componentDidUpdate(prevProps: Props, prevState: State) {
-        if (prevProps.remoteControlStatus !== this.props.remoteControlStatus) {
-            this.setState({isRemoteControlActive: this.props.remoteControlStatus});
-        }
-
         if (prevProps.theme.type !== this.props.theme.type) {
             this.style = this.genStyle();
         }
@@ -1189,7 +1058,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         }
 
         const msg = isSharing ? formatMessage({defaultMessage: 'You\'re sharing your screen'}) : formatMessage({defaultMessage: 'You\'re viewing {presenterName}\'s screen'}, {presenterName: getUserDisplayName(profile)});
-        const remoteControlMsg = this.state.isRemoteControlActive ? formatMessage({defaultMessage: 'Remote Control Active'}) : '';
 
         return (
             <div
@@ -1210,16 +1078,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         muted={true}
                         autoPlay={true}
                         onClick={(ev) => ev.preventDefault()}
-                        onMouseMove={this.handleRemoteMouseMove}
-                        onMouseDown={this.handleRemoteMouseDown}
-                        onMouseUp={this.handleRemoteMouseUp}
-                        onWheel={this.handleRemoteWheel}
-                        onKeyDown={this.handleRemoteKeyDown}
-                        onKeyUp={this.handleRemoteKeyUp}
-                        tabIndex={0}
-                        style={{
-                            cursor: this.state.isRemoteControlActive ? 'none' : 'default',
-                        }}
                         controls={false}
                     />
                     <StyledMediaControlBar>
@@ -1235,24 +1093,13 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         </StyledMediaFullscreenButton>
                     </StyledMediaControlBar>
                 </StyledMediaController>
-                <div style={{display: 'flex', gap: '8px'}}>
-                    <span style={this.style.screenSharingMsg}>
-                        <ScreenIcon
-                            fill={'rgba(255, 255, 255, 0.56)'}
-                            style={{width: '12px', height: '12px'}}
-                        />
-                        {msg}
-                    </span>
-                    {remoteControlMsg && (
-                        <span style={{...this.style.screenSharingMsg, background: 'var(--dnd-indicator)'}}>
-                            <MonitorIcon
-                                fill={'white'}
-                                style={{width: '12px', height: '12px'}}
-                            />
-                            {remoteControlMsg}
-                        </span>
-                    )}
-                </div>
+                <span style={this.style.screenSharingMsg}>
+                    <ScreenIcon
+                        fill={'rgba(255, 255, 255, 0.56)'}
+                        style={{width: '12px', height: '12px'}}
+                    />
+                    {msg}
+                </span>
             </div>
         );
     };
@@ -1638,17 +1485,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                             <ReactionButton
                                 ref={this.emojiButtonRef}
                                 isHandRaised={this.isHandRaised()}
-                            />
-
-                            <ControlsButton
-                                id='calls-popout-remote-control-button'
-                                ariaLabel={this.state.isRemoteControlActive ? formatMessage({defaultMessage: 'Stop remote control'}) : formatMessage({defaultMessage: 'Request remote control'})}
-                                onToggle={this.onRequestRemoteControl}
-                                tooltipText={this.state.isRemoteControlActive ? formatMessage({defaultMessage: 'Stop remote control'}) : formatMessage({defaultMessage: 'Request remote control'})}
-                                bgColor={this.state.isRemoteControlActive ? 'rgba(var(--dnd-indicator-rgb), 0.16)' : ''}
-                                iconFill={this.state.isRemoteControlActive ? 'var(--dnd-indicator)' : ''}
-                                icon={<MonitorIcon style={{width: '20px', height: '20px'}}/>}
-                                disabled={!this.props.screenSharingSession || this.props.screenSharingSession.session_id === this.props.currentSession?.session_id}
                             />
 
                             {isHost && this.props.recordingsEnabled &&
