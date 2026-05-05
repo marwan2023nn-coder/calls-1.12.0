@@ -119,7 +119,7 @@ export const HostNotices = ({onWidget = false}: Props) => {
                                     dispatch(setRemoteControlStatus(true));
                                     getCallsClient()?.sendRemoteControlEvent({
                                         type: 'grant',
-                                        userID: n.userID,
+                                        user_id: n.userID,
                                     });
                                 }}
                             >

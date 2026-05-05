@@ -455,11 +455,24 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 			return fmt.Errorf("sharer session not found")
 		}
 
-		p.publishWebSocketEvent(wsEventRemoteControl, data, &WebSocketBroadcast{
-			UserID:              sharerSession.UserID,
-			ConnectionID:        sharerSession.ID,
+		broadcast := &WebSocketBroadcast{
 			ReliableClusterSend: true,
-		})
+		}
+
+		if data["type"] == "grant" {
+			// Relay grant to the requesting user
+			targetUserID, ok := data["user_id"].(string)
+			if !ok {
+				return fmt.Errorf("missing or invalid user_id in grant message")
+			}
+			broadcast.UserID = targetUserID
+		} else {
+			// Relay everything else (requests, events) to the sharer
+			broadcast.UserID = sharerSession.UserID
+			broadcast.ConnectionID = sharerSession.ID
+		}
+
+		p.publishWebSocketEvent(wsEventRemoteControl, data, broadcast)
 	case clientMessageTypeRaiseHand, clientMessageTypeUnraiseHand:
 		evType := wsEventUserUnraiseHand
 		if msg.Type == clientMessageTypeRaiseHand {

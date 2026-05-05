@@ -459,6 +459,11 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         this.props.hideExpandedView();
         const callsClient = getCallsClient();
         if (callsClient) {
+            if (this.state.isRemoteControlActive) {
+                callsClient.sendRemoteControlEvent({
+                    type: 'stop',
+                });
+            }
             callsClient.disconnect();
             if (window.opener) {
                 window.close();
@@ -525,11 +530,15 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     onRequestRemoteControl = () => {
         if (this.state.isRemoteControlActive) {
             this.setState({isRemoteControlActive: false});
+            getCallsClient()?.sendRemoteControlEvent({
+                type: 'stop',
+            });
             return;
         }
 
         getCallsClient()?.sendRemoteControlEvent({
             type: 'request',
+            user_id: this.props.currentUserID,
         });
     };
 
