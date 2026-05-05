@@ -36,7 +36,6 @@ import {
     loadCallState,
     loadProfilesByIdsIfMissing,
     removeIncomingCallNotification,
-    setRemoteControlStatus,
     userLeft,
 } from 'src/actions';
 import {userLeftChannelErr, userRemovedFromChannelErr} from 'src/client';
@@ -95,7 +94,6 @@ import {
     getUserDisplayName,
     notificationsStopRinging,
     playSound,
-    sendDesktopEvent,
 } from './utils';
 
 // NOTE: it's important this function is kept synchronous in order to guarantee the order of
@@ -235,44 +233,6 @@ export function handleUserMuted(store: Store, ev: WebSocketMessage<UserMutedUnmu
             session_id: ev.data.session_id,
         },
     });
-}
-
-export function handleRemoteControl(store: Store, ev: WebSocketMessage<any>) {
-    if (ev.data.type === 'request') {
-        const channelID = ev.data.channelID || ev.broadcast.channel_id;
-        const profiles = profilesInCurrentCallMap(store.getState());
-        const displayName = getUserDisplayName(profiles[ev.data.user_id]);
-
-        const notice: HostControlNotice = {
-            type: HostControlNoticeType.RemoteControlRequest,
-            callID: channelID,
-            noticeID: generateId(),
-            displayName,
-            userID: ev.data.user_id,
-        };
-
-        store.dispatch({
-            type: HOST_CONTROL_NOTICE,
-            data: notice,
-        });
-
-        setTimeout(() => {
-            store.dispatch({
-                type: HOST_CONTROL_NOTICE_TIMEOUT_EVENT,
-                data: {
-                    callID: notice.callID,
-                    noticeID: notice.noticeID,
-                },
-            });
-        }, HOST_CONTROL_NOTICE_TIMEOUT);
-    } else if (ev.data.type === 'grant') {
-        const currentUserID = getCurrentUserId(store.getState());
-        if (ev.data.userID === currentUserID) {
-            store.dispatch(setRemoteControlStatus(true));
-        }
-    } else {
-        sendDesktopEvent('calls-send-remote-control-event', ev.data);
-    }
 }
 
 // NOTE: it's important this function is kept synchronous in order to guarantee the order of

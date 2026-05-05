@@ -53,7 +53,6 @@ const (
 	wsEventHostScreenOff             = "host_screen_off"
 	wsEventHostLowerHand             = "host_lower_hand"
 	wsEventHostRemoved               = "host_removed"
-	wsEventRemoteControl             = "remote_control"
 
 	wsReconnectionTimeout = 10 * time.Second
 )
@@ -431,34 +430,6 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 			ChannelID:           us.channelID,
 			ReliableClusterSend: true,
 			UserIDs:             getUserIDsFromSessions(state.sessions),
-		})
-	case clientMessageTypeRemoteControl:
-		state, err := p.getCallState(us.channelID, false)
-		if err != nil {
-			return fmt.Errorf("failed to get call state: %w", err)
-		}
-		if state == nil {
-			return fmt.Errorf("no call ongoing")
-		}
-
-		if state.Call.Props.ScreenSharingSessionID == "" {
-			return fmt.Errorf("no one is sharing screen")
-		}
-
-		var data map[string]interface{}
-		if err := json.Unmarshal(msg.Data, &data); err != nil {
-			return fmt.Errorf("failed to unmarshal remote control data: %w", err)
-		}
-
-		sharerSession := state.sessions[state.Call.Props.ScreenSharingSessionID]
-		if sharerSession == nil {
-			return fmt.Errorf("sharer session not found")
-		}
-
-		p.publishWebSocketEvent(wsEventRemoteControl, data, &WebSocketBroadcast{
-			UserID:              sharerSession.UserID,
-			ConnectionID:        sharerSession.ID,
-			ReliableClusterSend: true,
 		})
 	case clientMessageTypeRaiseHand, clientMessageTypeUnraiseHand:
 		evType := wsEventUserUnraiseHand
