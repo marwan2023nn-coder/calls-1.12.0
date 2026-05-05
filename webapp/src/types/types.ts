@@ -186,6 +186,7 @@ export enum HostControlNoticeType {
     LowerHand,
     HostChanged,
     HostRemoved,
+    RemoteControlRequest,
 }
 
 export type HostControlNotice = {

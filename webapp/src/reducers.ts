@@ -44,6 +44,7 @@ import {
     RECEIVED_CALLS_USER_PREFERENCES,
     RECEIVED_CALLS_VERSION_INFO,
     RECEIVED_CHANNEL_STATE,
+    REMOTE_CONTROL_STATUS,
     RECORDINGS_ENABLED,
     REMOVE_INCOMING_CALL,
     RINGING_FOR_CALL,
@@ -1074,6 +1075,17 @@ const hostControlNotices = (state: hostControlNoticeState = {},
     }
 };
 
+const remoteControlStatus = (state = false, action: { type: string, data: boolean }) => {
+    switch (action.type) {
+    case UNINIT:
+        return false;
+    case REMOTE_CONTROL_STATUS:
+        return action.data;
+    default:
+        return state;
+    }
+};
+
 export default combineReducers({
     channels,
     clientStateReducer,
@@ -1101,4 +1113,5 @@ export default combineReducers({
     liveCaptions,
     clientConnecting,
     hostControlNotices,
+    remoteControlStatus,
 });
