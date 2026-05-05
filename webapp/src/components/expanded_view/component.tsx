@@ -33,6 +33,7 @@ import CollapseIcon from 'src/components/icons/collapse';
 import CompassIcon from 'src/components/icons/compassIcon';
 import GridViewIcon from 'src/components/icons/grid_view';
 import LeaveCallIcon from 'src/components/icons/leave_call_icon';
+import MonitorIcon from 'src/components/icons/monitor';
 import MutedIcon from 'src/components/icons/muted_icon';
 import ParticipantsIcon from 'src/components/icons/participants';
 import RecordCircleIcon from 'src/components/icons/record_circle';
@@ -89,7 +90,6 @@ import ParticipantsGrid from './participants_grid';
 import {ReactionButton, ReactionButtonRef} from './reaction_button';
 import RecordingInfoPrompt from './recording_info_prompt';
 import {RemoveConfirmation} from './remove_confirmation';
-import MonitorIcon from 'src/components/icons/monitor';
 
 interface Props extends RouteComponentProps {
     intl: IntlShape,
@@ -1878,7 +1878,7 @@ const MuteOthersButton = styled.button`
     gap: 6px;
     font-family: 'Effra_Trial_Rg';
     font-size: 11px;
-    
+
     line-height: 16px;
     color: var(--button-bg);
     align-items: center;
@@ -2087,7 +2087,7 @@ const VideoProfileState = styled.div`
 
   font-size: 12px;
   font-style: normal;
-  
+
   line-height: 16px;
 `;
 

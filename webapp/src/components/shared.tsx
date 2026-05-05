@@ -32,7 +32,7 @@ export const StyledTooltip = styled(Tooltip)<{$isDisabled?: boolean}>`
 export const CallsTooltipStyle = createGlobalStyle`
   .tooltip .tooltip-inner {
     background-color: #00987e !important;
-    color: var(--button-color) !important;
+    color: #ffffff !important;
   }
 
   .tooltip .tooltip-arrow::before {
