@@ -267,11 +267,9 @@ export function handleRemoteControl(store: Store, ev: WebSocketMessage<any>) {
         }, HOST_CONTROL_NOTICE_TIMEOUT);
     } else if (ev.data.type === 'grant') {
         const currentUserID = getCurrentUserId(store.getState());
-        if (ev.data.user_id === currentUserID) {
+        if (ev.data.userID === currentUserID) {
             store.dispatch(setRemoteControlStatus(true));
         }
-    } else if (ev.data.type === 'stop') {
-        store.dispatch(setRemoteControlStatus(false));
     } else {
         sendDesktopEvent('calls-send-remote-control-event', ev.data);
     }

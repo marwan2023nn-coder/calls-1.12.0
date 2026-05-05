@@ -4,7 +4,6 @@
   "description": "يدمج الاتصال الصوتي الفوري داخل workspace",
   "homepage_url": "https://github.com/mattermost/mattermost-plugin-calls/",
   "support_url": "https://github.com/mattermost/mattermost-plugin-calls/issues",
-  "version": "1.12.0",
   "icon_path": "assets/plugin_icon.svg",
   "min_server_version": "10.0.0",
   "server": {
