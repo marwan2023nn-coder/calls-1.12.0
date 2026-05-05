@@ -33,7 +33,6 @@ import CollapseIcon from 'src/components/icons/collapse';
 import CompassIcon from 'src/components/icons/compassIcon';
 import GridViewIcon from 'src/components/icons/grid_view';
 import LeaveCallIcon from 'src/components/icons/leave_call_icon';
-import MonitorIcon from 'src/components/icons/monitor';
 import MutedIcon from 'src/components/icons/muted_icon';
 import ParticipantsIcon from 'src/components/icons/participants';
 import RecordCircleIcon from 'src/components/icons/record_circle';
@@ -81,6 +80,7 @@ import {
     untranslatable,
 } from 'src/utils';
 import {serverDismissedAt} from 'src/utils/clock_skew';
+import {getRelativeCoordinates, throttle} from 'src/utils/remote_control';
 import styled, {createGlobalStyle, css} from 'styled-components';
 
 import {CallSettingsButton} from './call_settings';
@@ -172,6 +172,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     private pushToTalk = false;
     private screenPlayer: HTMLVideoElement | null = null;
     private callQualityBannerLocked = false;
+    private throttledMouseMove: (ev: React.MouseEvent) => void;
 
     static contextType = window.ProductApi.WebSocketProvider;
     declare context: React.ContextType<typeof window.ProductApi.WebSocketProvider>;
@@ -284,6 +285,19 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     constructor(props: Props) {
         super(props);
         this.emojiButtonRef = React.createRef();
+
+        this.throttledMouseMove = throttle((ev: React.MouseEvent) => {
+            if (!this.screenPlayer) {
+                return;
+            }
+            const coords = getRelativeCoordinates(ev.nativeEvent, this.screenPlayer);
+            getCallsClient()?.sendRemoteControlEvent({
+                type: 'mousemove',
+                x: coords.x,
+                y: coords.y,
+            });
+        }, 50);
+
         this.state = {
             screenStream: null,
             selfVideoStream: null,
@@ -1034,6 +1048,64 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         );
     };
 
+    onRemoteControlMouseDown = (ev: React.MouseEvent) => {
+        if (!this.screenPlayer) {
+            return;
+        }
+        const coords = getRelativeCoordinates(ev.nativeEvent, this.screenPlayer);
+        getCallsClient()?.sendRemoteControlEvent({
+            type: 'mousedown',
+            button: ev.button,
+            x: coords.x,
+            y: coords.y,
+        });
+    };
+
+    onRemoteControlMouseUp = (ev: React.MouseEvent) => {
+        if (!this.screenPlayer) {
+            return;
+        }
+        const coords = getRelativeCoordinates(ev.nativeEvent, this.screenPlayer);
+        getCallsClient()?.sendRemoteControlEvent({
+            type: 'mouseup',
+            button: ev.button,
+            x: coords.x,
+            y: coords.y,
+        });
+    };
+
+    onRemoteControlWheel = (ev: React.WheelEvent) => {
+        getCallsClient()?.sendRemoteControlEvent({
+            type: 'wheel',
+            deltaX: ev.deltaX,
+            deltaY: ev.deltaY,
+        });
+    };
+
+    onRemoteControlKeyDown = (ev: React.KeyboardEvent) => {
+        getCallsClient()?.sendRemoteControlEvent({
+            type: 'keydown',
+            key: ev.key,
+            code: ev.code,
+            altKey: ev.altKey,
+            ctrlKey: ev.ctrlKey,
+            metaKey: ev.metaKey,
+            shiftKey: ev.shiftKey,
+        });
+    };
+
+    onRemoteControlKeyUp = (ev: React.KeyboardEvent) => {
+        getCallsClient()?.sendRemoteControlEvent({
+            type: 'keyup',
+            key: ev.key,
+            code: ev.code,
+            altKey: ev.altKey,
+            ctrlKey: ev.ctrlKey,
+            metaKey: ev.metaKey,
+            shiftKey: ev.shiftKey,
+        });
+    };
+
     renderScreenSharingPlayer = () => {
         const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
         const {formatMessage} = this.props.intl;
@@ -1078,6 +1150,14 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         muted={true}
                         autoPlay={true}
                         onClick={(ev) => ev.preventDefault()}
+                        onMouseMove={this.throttledMouseMove}
+                        onMouseDown={this.onRemoteControlMouseDown}
+                        onMouseUp={this.onRemoteControlMouseUp}
+                        onWheel={this.onRemoteControlWheel}
+                        onKeyDown={this.onRemoteControlKeyDown}
+                        onKeyUp={this.onRemoteControlKeyUp}
+                        tabIndex={0}
+                        style={{outline: 'none'}}
                         controls={false}
                     />
                     <StyledMediaControlBar>

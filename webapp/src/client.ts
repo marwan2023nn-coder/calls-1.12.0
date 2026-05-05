@@ -533,6 +533,13 @@ export default class CallsClient extends EventEmitter {
 
             this.peer = peer;
 
+            // Receiver side: listen for remote control events from WebRTC and forward to Desktop IPC
+            peer.on('remote-control-message', (msg: any) => {
+                if ((window.desktopAPI as any)?.sendRemoteControlEvent) {
+                    (window.desktopAPI as any).sendRemoteControlEvent(msg.data);
+                }
+            });
+
             this.collectICEStats();
 
             this.rtcMonitor = new RTCMonitor({
@@ -1202,6 +1209,12 @@ export default class CallsClient extends EventEmitter {
         this.ws?.send('react', {
             data: JSON.stringify(data),
         });
+    }
+
+    public sendRemoteControlEvent(event: any) {
+        if (this.peer) {
+            (this.peer as any).sendRemoteControlEvent(event);
+        }
     }
 
     public async getStats(): Promise<CallsClientStats | null> {
