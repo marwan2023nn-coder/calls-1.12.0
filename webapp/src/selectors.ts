@@ -385,6 +385,14 @@ export const isRecordingInCurrentCall: (state: GlobalState) => boolean =
         },
     );
 
+export const screenSharingSessionIDForCurrentCall = (state: GlobalState): string => {
+    const channelID = channelIDForCurrentCall(state);
+    if (!channelID) {
+        return '';
+    }
+    return screenSharingIDsForCalls(state)[channelID];
+};
+
 export const incomingCalls = (state: GlobalState): IncomingCallNotification[] =>
     pluginState(state).incomingCalls;
 

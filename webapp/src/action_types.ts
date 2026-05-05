@@ -30,6 +30,8 @@ export const HOST_CONTROL_NOTICE_TIMEOUT_EVENT = pluginId + '_host_control_notic
 export const USER_VIDEO_ON = pluginId + '_user_video_on';
 export const USER_VIDEO_OFF = pluginId + '_user_video_off';
 
+export const REMOTE_CONTROL = pluginId + '_remote_control';
+
 export const SHOW_EXPANDED_VIEW = pluginId + '_show_expanded_view';
 export const HIDE_EXPANDED_VIEW = pluginId + '_hide_expanded_view';
 export const SHOW_SWITCH_CALL_MODAL = pluginId + '_show_switch_call_modal';
