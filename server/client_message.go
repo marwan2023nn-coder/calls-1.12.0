@@ -29,9 +29,10 @@ const (
 	clientMessageTypeRaiseHand   = "raise_hand"
 	clientMessageTypeUnraiseHand = "unraise_hand"
 	clientMessageTypeReact       = "react"
-	clientMessageTypeCaption     = "caption"
-	clientMessageTypeMetric      = "metric"
-	clientMessageTypeCallState   = "call_state"
+	clientMessageTypeCaption       = "caption"
+	clientMessageTypeMetric        = "metric"
+	clientMessageTypeCallState     = "call_state"
+	clientMessageTypeRemoteControl = "remote_control"
 )
 
 func (m *clientMessage) ToJSON() ([]byte, error) {
@@ -59,10 +60,11 @@ var validClientMessageTypes = map[string]bool{
 	clientMessageTypeRaiseHand:   true,
 	clientMessageTypeUnraiseHand: true,
 	clientMessageTypeReact:       true,
-	clientMessageTypeCaption:     true,
-	clientMessageTypeMetric:      true,
-	clientMessageTypeCallState:   true,
-	"ping":                       true, // Special case: standard ping message
+	clientMessageTypeCaption:       true,
+	clientMessageTypeMetric:        true,
+	clientMessageTypeCallState:     true,
+	clientMessageTypeRemoteControl: true,
+	"ping":                         true, // Special case: standard ping message
 }
 
 func isValidClientMessageType(msgType string) bool {

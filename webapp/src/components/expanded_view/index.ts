@@ -29,6 +29,7 @@ import {
     recordingForCurrentCall,
     recordingMaxDuration,
     recordingsEnabled,
+    remoteControlStatus,
     screenSharingSessionForCurrentCall,
     sessionForCurrentCall,
     sessionsForOtherUsersInCall,
@@ -94,6 +95,7 @@ const mapStateToProps = (state: GlobalState) => {
         transcriptionsEnabled: transcriptionsEnabled(state),
         isAdmin: isCurrentUserSystemAdmin(state),
         hostControlsAllowed: areHostControlsAllowed(state),
+    remoteControlStatus: remoteControlStatus(state),
         enableVideo: callsConfig(state).EnableVideo && isDMChannel(channel),
         otherSessions: sessionsForOtherUsersInCall(state),
     };
