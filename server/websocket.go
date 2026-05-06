@@ -53,7 +53,6 @@ const (
 	wsEventHostScreenOff             = "host_screen_off"
 	wsEventHostLowerHand             = "host_lower_hand"
 	wsEventHostRemoved               = "host_removed"
-	wsEventRemoteControl             = "remote_control"
 
 	wsReconnectionTimeout = 10 * time.Second
 )
@@ -1355,93 +1354,6 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			p.LogError("handleMetricMessage failed", "err", err.Error())
 			return
 		}
-		return
-	case clientMessageTypeRemoteControl:
-		p.metrics.IncWebSocketEvent("in", msg.Type)
-
-		subtype, _ := req.Data["subtype"].(string)
-		if subtype == "" {
-			p.LogError("missing remote control subtype")
-			return
-		}
-
-		state, err := p.getCallState(us.channelID, false)
-		if err != nil {
-			p.LogError("failed to get call state", "err", err.Error())
-			return
-		}
-
-		if state == nil {
-			p.LogError("no call ongoing")
-			return
-		}
-
-		broadcast := &WebSocketBroadcast{
-			ChannelID:           us.channelID,
-			ReliableClusterSend: true,
-		}
-
-		switch subtype {
-		case "grant":
-			targetUserID, ok := req.Data["user_id"].(string)
-			if !ok {
-				p.LogError("missing target user_id for remote control grant")
-				return
-			}
-			broadcast.UserID = "" // Broadcast to all participants
-
-			state, err := p.lockCallReturnState(us.channelID)
-			if err != nil {
-				p.LogError("failed to lock call", "err", err.Error())
-				return
-			}
-			state.Call.Props.RemoteControlUserID = targetUserID
-			if err := p.store.UpdateCall(&state.Call); err != nil {
-				p.LogError("failed to update call", "err", err.Error())
-			}
-			p.unlockCall(us.channelID)
-		case "request", "stop", "event":
-			if state.Call.Props.ScreenSharingSessionID == "" {
-				p.LogDebug("no active screen sharing session")
-				return
-			}
-			sharerSession, ok := state.sessions[state.Call.Props.ScreenSharingSessionID]
-			if !ok {
-				p.LogError("sharer session not found")
-				return
-			}
-			broadcast.UserID = sharerSession.UserID
-
-			switch subtype {
-			case "request":
-				req.Data["user_id"] = userID
-			case "stop":
-				state, err := p.lockCallReturnState(us.channelID)
-				if err != nil {
-					p.LogError("failed to lock call", "err", err.Error())
-					return
-				}
-				state.Call.Props.RemoteControlUserID = ""
-				if err := p.store.UpdateCall(&state.Call); err != nil {
-					p.LogError("failed to update call", "err", err.Error())
-				}
-				p.unlockCall(us.channelID)
-
-				// Also notify all other users that control has stopped.
-				p.publishWebSocketEvent(wsEventRemoteControl, req.Data, &WebSocketBroadcast{
-					ChannelID:           us.channelID,
-					ReliableClusterSend: true,
-				})
-				return
-			case "event":
-				if state.Call.Props.RemoteControlUserID != userID {
-					p.LogWarn("unauthorized remote control event", "userID", userID)
-					return
-				}
-			}
-		}
-
-		p.publishWebSocketEvent(wsEventRemoteControl, req.Data, broadcast)
 		return
 	}
 

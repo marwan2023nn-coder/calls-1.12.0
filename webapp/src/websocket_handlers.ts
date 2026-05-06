@@ -76,7 +76,6 @@ import {
     USER_VIDEO_OFF,
     USER_VIDEO_ON,
     USER_VOICE_OFF,
-    REMOTE_CONTROL,
     USER_VOICE_ON,
 } from './action_types';
 import {logErr} from './log';
@@ -85,7 +84,6 @@ import {
     channelIDForCurrentCall,
     profilesInCurrentCallMap,
     ringingEnabled,
-    screenSharingSessionIDForCurrentCall,
     shouldPlayJoinUserSound,
 } from './selectors';
 import {Store} from './types/mattermost-webapp';
@@ -96,7 +94,6 @@ import {
     getUserDisplayName,
     notificationsStopRinging,
     playSound,
-    sendDesktopEvent,
 } from './utils';
 
 // NOTE: it's important this function is kept synchronous in order to guarantee the order of
@@ -236,51 +233,6 @@ export function handleUserMuted(store: Store, ev: WebSocketMessage<UserMutedUnmu
             session_id: ev.data.session_id,
         },
     });
-}
-
-export function handleRemoteControl(store: Store, ev: WebSocketMessage<any>) {
-    const {subtype, ...data} = ev.data;
-    const currentUserID = getCurrentUserId(store.getState());
-
-    if (subtype === 'event') {
-        const client = getCallsClient();
-        const callID = ev.data.channelID || ev.broadcast.channel_id;
-        if (client && client.channelID === callID) {
-            // Forward input event to Desktop app.
-            if (window.desktopAPI?.sendRemoteControlEvent) {
-                window.desktopAPI.sendRemoteControlEvent(data);
-            } else {
-                sendDesktopEvent('calls-send-remote-control-event', data);
-            }
-        }
-        return;
-    }
-
-    store.dispatch({
-        type: REMOTE_CONTROL,
-        data: {
-            subtype,
-            ...data,
-        },
-    });
-
-    const state = store.getState();
-    const isSharer = screenSharingSessionIDForCurrentCall(state) === getCallsClientSessionID();
-
-    if (subtype === 'request' && isSharer) {
-        const profile = profilesInCurrentCallMap(store.getState())[data.user_id] || getUser(store.getState(), data.user_id);
-        const displayName = getUserDisplayName(profile);
-
-        store.dispatch({
-            type: HOST_CONTROL_NOTICE,
-            data: {
-                type: HostControlNoticeType.RemoteControlRequest,
-                noticeID: generateId(),
-                displayName,
-                userID: data.user_id,
-            },
-        });
-    }
 }
 
 // NOTE: it's important this function is kept synchronous in order to guarantee the order of

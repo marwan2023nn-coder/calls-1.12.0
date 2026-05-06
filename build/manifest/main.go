@@ -149,11 +149,7 @@ func findManifest() (*model.Manifest, error) {
 		}
 	}
 	if version == "" {
-		if (BuildTagLatest == "" || BuildTagLatest == "v") && manifest.Version != "" {
-			version = manifest.Version
-		} else {
-			version = BuildTagLatest + "+" + BuildHashShort
-		}
+		version = BuildTagLatest + "+" + BuildHashShort
 	}
 	if strings.HasPrefix(version, "v") {
 		version = version[1:]
