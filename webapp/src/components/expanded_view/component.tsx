@@ -33,7 +33,7 @@ import CollapseIcon from 'src/components/icons/collapse';
 import CompassIcon from 'src/components/icons/compassIcon';
 import GridViewIcon from 'src/components/icons/grid_view';
 import LeaveCallIcon from 'src/components/icons/leave_call_icon';
-import RemoteControlIcon from 'src/components/icons/monitor_account';
+import MonitorIcon from 'src/components/icons/monitor';
 import MutedIcon from 'src/components/icons/muted_icon';
 import ParticipantsIcon from 'src/components/icons/participants';
 import RecordCircleIcon from 'src/components/icons/record_circle';
@@ -87,10 +87,6 @@ import {CallSettingsButton} from './call_settings';
 import ControlsButton, {CallThreadIcon, MentionsCounter, UnreadDot} from './controls_button';
 import GlobalBanner from './global_banner';
 import ParticipantsGrid from './participants_grid';
-import {HostNotices} from 'src/components/host_notices';
-
-import {pluginId} from 'src/manifest';
-
 import {ReactionButton, ReactionButtonRef} from './reaction_button';
 import RecordingInfoPrompt from './recording_info_prompt';
 import {RemoveConfirmation} from './remove_confirmation';
@@ -147,7 +143,6 @@ interface State {
     alerts: CallAlertStates,
     removeConfirmation: RemoveConfirmationData | null,
     viewState: 'grid' | 'speaker',
-    remoteControlUserID: string | null,
 }
 
 const StyledMediaController = styled(MediaController)`
@@ -176,14 +171,12 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     private expandedRootRef = React.createRef<HTMLDivElement>();
     private pushToTalk = false;
     private screenPlayer: HTMLVideoElement | null = null;
-    private lastMouseMove = 0;
     private callQualityBannerLocked = false;
 
     static contextType = window.ProductApi.WebSocketProvider;
     declare context: React.ContextType<typeof window.ProductApi.WebSocketProvider>;
 
     #unlockNavigation?: () => void;
-    #unsubscribers: (() => void)[] = [];
 
     private genStyle: () => Record<string, React.CSSProperties> = () => {
         setCallsGlobalCSSVars(this.props.theme.sidebarBg);
@@ -300,7 +293,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             alerts: CallAlertStatesDefault,
             removeConfirmation: null,
             viewState: 'speaker',
-            remoteControlUserID: null,
         };
 
         if (window.opener) {
@@ -593,69 +585,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         });
     };
 
-    onRemoteControlRequest = () => {
-        getCallsClient()?.sendRemoteControl('request', {});
-    };
-
-    onRemoteControlStop = () => {
-        getCallsClient()?.sendRemoteControl('stop', {});
-    };
-
-    handleRemoteControlEvent = (ev: React.MouseEvent | React.WheelEvent | React.KeyboardEvent) => {
-        const isSharer = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
-        const amViewerWithControl = this.state.remoteControlUserID === this.props.currentUserID;
-
-        if (isSharer || !amViewerWithControl || !this.screenPlayer) {
-            return;
-        }
-
-        const data: any = {};
-
-        if ('button' in ev) {
-            // Mouse event
-            const rect = this.screenPlayer.getBoundingClientRect();
-            const x = (ev.clientX - rect.left) / rect.width;
-            const y = (ev.clientY - rect.top) / rect.height;
-
-            if (x < 0 || x > 1 || y < 0 || y > 1) {
-                return;
-            }
-
-            if (ev.type === 'mousemove') {
-                const now = Date.now();
-                if (now - this.lastMouseMove < 50) {
-                    return;
-                }
-                this.lastMouseMove = now;
-            }
-
-            data.type = 'mouse';
-            data.event = ev.type;
-            data.x = x;
-            data.y = y;
-            data.button = (ev as React.MouseEvent).button;
-        } else if ('deltaY' in ev) {
-            // Wheel event
-            const wheelEv = ev as unknown as React.WheelEvent;
-            data.type = 'wheel';
-            data.deltaX = wheelEv.deltaX;
-            data.deltaY = wheelEv.deltaY;
-        } else if ('key' in ev) {
-            // Keyboard event
-            const kbEv = ev as unknown as React.KeyboardEvent;
-            data.type = 'keyboard';
-            data.event = ev.type;
-            data.key = kbEv.key;
-            data.keyCode = kbEv.keyCode;
-            data.shiftKey = kbEv.shiftKey;
-            data.ctrlKey = kbEv.ctrlKey;
-            data.altKey = kbEv.altKey;
-            data.metaKey = kbEv.metaKey;
-        }
-
-        getCallsClient()?.sendRemoteControl('event', data);
-    };
-
     public componentDidUpdate(prevProps: Props, prevState: State) {
         if (prevProps.theme.type !== this.props.theme.type) {
             this.style = this.genStyle();
@@ -701,21 +630,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
 
     public componentDidMount() {
         const callsClient = getCallsClient();
-        const onRemoteControlMsg = (msg: any) => {
-            if (msg.event !== `custom_${pluginId}_remote_control`) {
-                return;
-            }
-            const ev = msg.data;
-            if (ev.subtype === 'grant') {
-                this.setState({remoteControlUserID: ev.user_id});
-            } else if (ev.subtype === 'stop') {
-                this.setState({remoteControlUserID: null});
-            }
-        };
-
-        this.context.addMessageListener(onRemoteControlMsg);
-        this.#unsubscribers.push(() => this.context.removeMessageListener(onRemoteControlMsg));
-
         if (!callsClient) {
             logErr('callsClient should be defined');
             return;
@@ -909,7 +823,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         window.removeEventListener('blur', this.handleBlur, true);
         this.#unlockNavigation?.();
         this.context?.removeFirstConnectListener(this.requestCallState);
-        this.#unsubscribers.forEach((unsub) => unsub());
     }
 
     dismissRecordingPrompt = () => {
@@ -1165,13 +1078,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         muted={true}
                         autoPlay={true}
                         onClick={(ev) => ev.preventDefault()}
-                        onMouseDown={this.handleRemoteControlEvent}
-                        onMouseUp={this.handleRemoteControlEvent}
-                        onMouseMove={this.handleRemoteControlEvent}
-                        onWheel={this.handleRemoteControlEvent}
-                        onKeyDown={this.handleRemoteControlEvent}
-                        onKeyUp={this.handleRemoteControlEvent}
-                        tabIndex={0}
                         controls={false}
                     />
                     <StyledMediaControlBar>
@@ -1626,44 +1532,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                                 onLiveCaptionsToggle={this.onLiveCaptionsToggle}
                                 showLiveCaptions={this.state.showLiveCaptions}
                             />
-
-                            {this.props.screenSharingSession && !isSharing && (
-                                <ControlsButton
-                                    id='calls-popout-remote-control-button'
-                                    ariaLabel={this.state.remoteControlUserID === this.props.currentUserID ? formatMessage({defaultMessage: 'Stop Remote Control'}) : formatMessage({defaultMessage: 'Request Remote Control'})}
-                                    onToggle={this.state.remoteControlUserID === this.props.currentUserID ? this.onRemoteControlStop : this.onRemoteControlRequest}
-                                    tooltipText={this.state.remoteControlUserID === this.props.currentUserID ? formatMessage({defaultMessage: 'Stop Remote Control'}) : formatMessage({defaultMessage: 'Request Remote Control'})}
-                                    bgColor={this.state.remoteControlUserID === this.props.currentUserID ? 'rgba(var(--dnd-indicator-rgb), 0.16)' : ''}
-                                    iconFill={this.state.remoteControlUserID === this.props.currentUserID ? 'var(--dnd-indicator)' : ''}
-                                    icon={
-                                        <RemoteControlIcon
-                                            style={{
-                                                width: '20px',
-                                                height: '20px',
-                                            }}
-                                        />
-                                    }
-                                />
-                            )}
-
-                            {isSharing && this.state.remoteControlUserID && (
-                                <ControlsButton
-                                    id='calls-popout-stop-remote-control-button'
-                                    ariaLabel={formatMessage({defaultMessage: 'Stop Remote Control'})}
-                                    onToggle={this.onRemoteControlStop}
-                                    tooltipText={formatMessage({defaultMessage: 'Stop Remote Control'})}
-                                    bgColor={'rgba(var(--dnd-indicator-rgb), 0.16)'}
-                                    iconFill={'var(--dnd-indicator)'}
-                                    icon={
-                                        <RemoteControlIcon
-                                            style={{
-                                                width: '20px',
-                                                height: '20px',
-                                            }}
-                                        />
-                                    }
-                                />
-                            )}
                         </div>
                         <div style={{flex: '1', display: 'flex', justifyContent: 'flex-end'}}>
                             <DotMenu
@@ -1693,9 +1561,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         data-testid={'rhs-participant-list'}
                         style={this.style.rhs}
                     >
-                        <div style={{padding: '0 16px'}}>
-                            <HostNotices/>
-                        </div>
                         <div
                             data-testid={'rhs-participant-list-header'}
                             style={this.style.rhsHeaderContainer}

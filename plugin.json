@@ -1,7 +1,6 @@
 {
   "id": "com.workspace.calls",
   "name": "المكالمات",
-  "version": "1.12.0",
   "description": "يدمج الاتصال الصوتي الفوري داخل workspace",
   "homepage_url": "https://github.com/mattermost/mattermost-plugin-calls/",
   "support_url": "https://github.com/mattermost/mattermost-plugin-calls/issues",

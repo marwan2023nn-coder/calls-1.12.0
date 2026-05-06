@@ -1204,13 +1204,6 @@ export default class CallsClient extends EventEmitter {
         });
     }
 
-    public sendRemoteControl(subtype: string, data: any) {
-        this.ws?.send('remote_control', {
-            subtype,
-            ...data,
-        });
-    }
-
     public async getStats(): Promise<CallsClientStats | null> {
         if (!this.peer) {
             throw new Error('not connected');
