@@ -56,15 +56,15 @@ const ChannelLinkLabel = (props: Props) => {
                     height: 'auto',
                     minWidth: '20px',
 
-                    // استخدام الخصائص المنطقية لدعم الاتجاهين تلقائياً
-                    marginInlineStart: 'auto', // في العربي سيصبح Margin من اليسار، وفي الإنجليزي من اليمين
-                    marginInlineEnd: '4px', // يضمن مسافة 4px بجانب النص في أي اتجاه
+                    // Use logical properties to support both directions automatically
+                    marginInlineStart: 'auto',
+                    marginInlineEnd: '4px',
 
-                    color: '#00987e', // تمرير اللون للأيقونة بالداخل عبر التوريث
+                    color: '#00987e', // Pass color to the icon inside via inheritance
                 }}
             >
                 <ActiveCallIcon
-                    fill={'currentColor'} // أفضل ممارسة: اجعل الأيقونة تأخذ لون الـ span الأب
+                    fill={'currentColor'} // Best practice: make the icon take the color of the parent span
                     style={{
                         minWidth: '12px',
                         maxWidth: '12px',
