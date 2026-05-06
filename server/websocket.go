@@ -1381,13 +1381,14 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			ReliableClusterSend: true,
 		}
 
-		if subtype == "grant" {
+		switch subtype {
+		case "grant":
 			targetUserID, ok := req.Data["user_id"].(string)
 			if !ok {
 				p.LogError("missing target user_id for remote control grant")
 				return
 			}
-			broadcast.UserID = targetUserID
+			broadcast.UserID = "" // Broadcast to all participants
 
 			state, err := p.lockCallReturnState(us.channelID)
 			if err != nil {
@@ -1399,7 +1400,7 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 				p.LogError("failed to update call", "err", err.Error())
 			}
 			p.unlockCall(us.channelID)
-		} else {
+		case "request", "stop", "event":
 			if state.Call.Props.ScreenSharingSessionID == "" {
 				p.LogDebug("no active screen sharing session")
 				return
@@ -1411,9 +1412,10 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			}
 			broadcast.UserID = sharerSession.UserID
 
-			if subtype == "request" {
+			switch subtype {
+			case "request":
 				req.Data["user_id"] = userID
-			} else if subtype == "stop" {
+			case "stop":
 				state, err := p.lockCallReturnState(us.channelID)
 				if err != nil {
 					p.LogError("failed to lock call", "err", err.Error())
@@ -1431,14 +1433,11 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 					ReliableClusterSend: true,
 				})
 				return
-			}
-		}
-
-		// Verify authorization for events
-		if subtype == "event" {
-			if state.Call.Props.RemoteControlUserID != userID {
-				p.LogWarn("unauthorized remote control event", "userID", userID)
-				return
+			case "event":
+				if state.Call.Props.RemoteControlUserID != userID {
+					p.LogWarn("unauthorized remote control event", "userID", userID)
+					return
+				}
 			}
 		}
 
