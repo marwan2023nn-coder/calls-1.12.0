@@ -5,9 +5,13 @@ import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useSelector} from 'react-redux';
+import {batchActions} from 'redux-batched-actions';
+import {useDispatch} from 'react-redux';
 import CompassIcon from 'src/components/icons/compassIcon';
 import MonitorAccount from 'src/components/icons/monitor_account';
 import {HOST_CONTROL_NOTICE_TIMEOUT} from 'src/constants';
+import {getCallsClient} from 'src/utils';
+import {HOST_CONTROL_NOTICE_TIMEOUT_EVENT} from 'src/action_types';
 import {hostControlNoticesForCurrentCall} from 'src/selectors';
 import {HostControlNoticeType} from 'src/types/types';
 import styled, {css, keyframes} from 'styled-components';
@@ -19,8 +23,34 @@ type Props = {
 export const HostNotices = ({onWidget = false}: Props) => {
     const currentUserId = useSelector(getCurrentUserId);
     const notices = useSelector(hostControlNoticesForCurrentCall);
+    const dispatch = useDispatch();
 
     const youAreHostMsg = <FormattedMessage defaultMessage={'You are now the host'}/>;
+
+    const onRemoteControlGrant = (userID: string, noticeID: string, callID: string) => {
+        getCallsClient()?.sendRemoteControl('grant', {user_id: userID});
+        dispatch(batchActions([
+            {
+                type: HOST_CONTROL_NOTICE_TIMEOUT_EVENT,
+                data: {
+                    callID,
+                    noticeID,
+                },
+            },
+        ]));
+    };
+
+    const onRemoteControlReject = (noticeID: string, callID: string) => {
+        dispatch(batchActions([
+            {
+                type: HOST_CONTROL_NOTICE_TIMEOUT_EVENT,
+                data: {
+                    callID,
+                    noticeID,
+                },
+            },
+        ]));
+    };
 
     return (
         <>
@@ -89,6 +119,44 @@ export const HostNotices = ({onWidget = false}: Props) => {
                                     }}
                                 />
                             </Text>
+                        </Notice>
+                    );
+                case HostControlNoticeType.RemoteControlRequest:
+                    return (
+                        <Notice
+                            key={n.noticeID}
+                            data-testid={'notice-remote-control-request'}
+                            $onWidget={onWidget}
+                        >
+                            <StyledCompassIcon
+                                icon={'monitor'}
+                                $onWidget={onWidget}
+                            />
+                            <Text $onWidget={onWidget}>
+                                <FormattedMessage
+                                    defaultMessage={'<b>{name}</b> wants remote control'}
+                                    values={{
+                                        b: (text: React.ReactNode) => <b>{text}</b>,
+                                        name: n.displayName,
+                                    }}
+                                />
+                            </Text>
+                            {!onWidget && (
+                                <div style={{display: 'flex', gap: '4px', marginInlineStart: '8px'}}>
+                                    <button
+                                        className='btn btn-primary btn-sm'
+                                        onClick={() => onRemoteControlGrant(n.userID!, n.noticeID, n.callID)}
+                                    >
+                                        <FormattedMessage defaultMessage='Grant'/>
+                                    </button>
+                                    <button
+                                        className='btn btn-secondary btn-sm'
+                                        onClick={() => onRemoteControlReject(n.noticeID, n.callID)}
+                                    >
+                                        <FormattedMessage defaultMessage='Reject'/>
+                                    </button>
+                                </div>
+                            )}
                         </Notice>
                     );
                 default:

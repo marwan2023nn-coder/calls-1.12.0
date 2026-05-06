@@ -186,6 +186,7 @@ import {
     handleHostMute,
     handleHostRemoved,
     handleHostScreenOff,
+    handleRemoteControl,
     handleUserDismissedNotification,
     handleUserJoined,
     handleUserLeft,
@@ -330,6 +331,10 @@ export default class Plugin {
 
         registry.registerWebSocketEventHandler(`custom_${pluginId}_user_video_off`, (ev) => {
             handleUserVideoOff(store, ev);
+        });
+
+        registry.registerWebSocketEventHandler(`custom_${pluginId}_remote_control`, (ev) => {
+            handleRemoteControl(store, ev);
         });
     }
 
@@ -1170,13 +1175,15 @@ declare global {
         registerPlugin(id: string, plugin: Plugin): void,
 
         callsClient?: CallsClient,
+        desktop?: {
+            version?: string | null;
+        };
+        desktopAPI?: DesktopAPI & {
+            sendRemoteControlEvent?: (data: any) => void;
+        };
         webkitAudioContext: AudioContext,
         basename: string,
 
-        desktop?: {
-            version?: string | null;
-        },
-        desktopAPI?: DesktopAPI;
         screenSharingTrackId: string,
         currentCallData?: CurrentCallData,
         callActions?: CallActions,
