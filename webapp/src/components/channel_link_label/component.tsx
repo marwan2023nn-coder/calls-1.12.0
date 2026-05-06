@@ -38,7 +38,7 @@ const ChannelLinkLabel = (props: Props) => {
                     id='call-profiles'
                 >
                     {formatMessage({
-                        defaultMessage: '{count, plural, =1 {{list} في المكالمة} other {{list} في المكالمة}}',
+                        defaultMessage: '{count, plural, =1 {{list} in call} other {{list} in call}}',
                     }, {
                         count: props.profiles.length,
                         list: formatList(userList),

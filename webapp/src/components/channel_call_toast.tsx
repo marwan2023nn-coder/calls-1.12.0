@@ -53,7 +53,7 @@ const ChannelCallToast = () => {
                         fill='var(--button-bg-rgb)'
                         style={{margin: '0 4px', width: '12px', height: '12px'}}
                     />
-                    <span style={{margin: '0 4px'}}>{intl.formatMessage({defaultMessage: 'انضم إلى المكالمة'})}</span>
+                    <span style={{margin: '0 4px'}}>{intl.formatMessage({defaultMessage: 'Join call'})}</span>
                     <span style={{opacity: '0.80', margin: '0 4px'}}>
                         {intl.formatMessage(
                             {defaultMessage: 'Started {callStartedAt}'},

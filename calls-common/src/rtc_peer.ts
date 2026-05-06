@@ -8,7 +8,7 @@ export enum DCMessageType {
     RemoteControl = 'remote-control',
 }
 
-export interface RTCPeerConfig {
+export interface RTCPeerConfig extends RTCConfiguration {
     iceServers: RTCIceServer[];
     logger: {
         logDebug: (...args: any[]) => void;
@@ -30,9 +30,7 @@ export class RTCPeer extends EventEmitter {
     constructor(config: RTCPeerConfig) {
         super();
         this.config = config;
-        this.pc = new RTCPeerConnection({
-            iceServers: config.iceServers,
-        });
+        this.pc = new RTCPeerConnection(config);
 
         this.pc.onicecandidate = (event) => {
             if (event.candidate) {
@@ -41,7 +39,6 @@ export class RTCPeer extends EventEmitter {
         };
 
         this.pc.ontrack = (event) => {
-            // Logic to emit stream event, simplified for this implementation
             this.emit('stream', event.streams[0], (event.track as any).trackInfo);
         };
 
@@ -53,12 +50,24 @@ export class RTCPeer extends EventEmitter {
             }
         };
 
+        // Handle incoming DataChannels on the receiver side
+        this.pc.ondatachannel = (event) => {
+            const dc = event.channel;
+            if (dc.label === 'remote-control-dc') {
+                this.remoteControlDC = dc;
+                this.setupRemoteControlDC(dc);
+            } else if (dc.label === 'signaling') {
+                this.signalingDC = dc;
+                this.setupDataChannel(dc);
+            }
+        };
+
         if (config.dcSignaling) {
             this.signalingDC = this.pc.createDataChannel('signaling', {negotiated: true, id: 0});
             this.setupDataChannel(this.signalingDC);
         }
 
-        // Initialize Remote Control Data Channel
+        // Initialize Remote Control Data Channel (for the offering side)
         this.remoteControlDC = this.pc.createDataChannel('remote-control-dc', {
             ordered: true,
         });

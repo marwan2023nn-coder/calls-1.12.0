@@ -533,13 +533,6 @@ export default class CallsClient extends EventEmitter {
 
             this.peer = peer;
 
-            // Receiver side: listen for remote control events from WebRTC and forward to Desktop IPC
-            peer.on('remote-control-message', (msg: any) => {
-                if ((window.desktopAPI as any)?.sendRemoteControlEvent) {
-                    (window.desktopAPI as any).sendRemoteControlEvent(msg.data);
-                }
-            });
-
             this.collectICEStats();
 
             this.rtcMonitor = new RTCMonitor({
@@ -577,6 +570,12 @@ export default class CallsClient extends EventEmitter {
                 logErr('peer error', err);
                 if (!this.closed) {
                     this.disconnect(err === rtcPeerTimeoutErr.message ? rtcPeerTimeoutErr : rtcPeerErr);
+                }
+            });
+
+            peer.on('remote-control-message', (msg: any) => {
+                if (window.desktopAPI?.sendRemoteControlEvent) {
+                    window.desktopAPI.sendRemoteControlEvent(msg.data);
                 }
             });
 
@@ -1211,12 +1210,6 @@ export default class CallsClient extends EventEmitter {
         });
     }
 
-    public sendRemoteControlEvent(event: any) {
-        if (this.peer) {
-            (this.peer as any).sendRemoteControlEvent(event);
-        }
-    }
-
     public async getStats(): Promise<CallsClientStats | null> {
         if (!this.peer) {
             throw new Error('not connected');
@@ -1256,5 +1249,9 @@ export default class CallsClient extends EventEmitter {
 
     public getSessionID() {
         return this.ws?.getOriginalConnID();
+    }
+
+    public sendRemoteControlEvent(event: any) {
+        this.peer?.sendRemoteControlEvent(event);
     }
 }

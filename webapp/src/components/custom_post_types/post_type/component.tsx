@@ -125,14 +125,14 @@ const PostType = ({
                 <>
                     <span>
                         {formatMessage(
-                            {id: 'app.call.started_at_message', defaultMessage: 'بدأت المكالمة في {startTime}'},
+                            {id: 'app.call.started_at_message', defaultMessage: 'Call started at {startTime}'},
                             {startTime: DateTime.fromMillis(callProps.start_at).toLocaleString(timeFormat)},
                         )}
                     </span>
                     <Divider>{untranslatable(' • ')}</Divider>
                     <span>
                         {formatMessage(
-                            {id: 'app.call.ended_at_message', defaultMessage: 'انتهت المكالمة في {endTime}'},
+                            {id: 'app.call.ended_at_message', defaultMessage: 'Call ended at {endTime}'},
                             {endTime: DateTime.fromMillis(callProps.end_at).toLocaleString(timeFormat)},
                         )}
                     </span>
@@ -148,7 +148,7 @@ const PostType = ({
                 />
                 {untranslatable(' ')}
                 {
-                    formatMessage({id: 'app.call.started_by_user', defaultMessage: 'بواسطة {user}'}, {user: getUserDisplayName(user)})
+                    formatMessage({id: 'app.call.started_by_user', defaultMessage: 'by {user}'}, {user: getUserDisplayName(user)})
                 }
             </>
         );
@@ -160,7 +160,7 @@ const PostType = ({
                 fill='var(--center-channel-bg)'
                 style={{width: '16px', height: '16px'}}
             />
-            <ButtonText>{formatMessage({id: 'app.call.join_call', defaultMessage: 'انضم إلى المكالمة'})}</ButtonText>
+            <ButtonText>{formatMessage({id: 'app.call.join_call', defaultMessage: 'Join call'})}</ButtonText>
         </JoinButton>
     );
 
@@ -184,7 +184,7 @@ const PostType = ({
             >
                 <DisabledButton>
                     <CallIcon fill='rgba(var(--center-channel-color-rgb), 0.32)'/>
-                    <ButtonText>{formatMessage({id: 'app.call.join_call', defaultMessage: 'انضم إلى المكالمة'})}</ButtonText>
+                    <ButtonText>{formatMessage({id: 'app.call.join_call', defaultMessage: 'Join call'})}</ButtonText>
                 </DisabledButton>
             </OverlayTrigger>
         );
@@ -239,7 +239,7 @@ const PostType = ({
                         <MessageWrapper>
                             {callActive &&
                                 <Message>
-                                    {formatMessage({defaultMessage: 'بدأت المكالمة'})}
+                                    {formatMessage({defaultMessage: 'Call started'})}
                                 </Message>
                             }
                             <SubMessage>{subMessage}</SubMessage>

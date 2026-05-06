@@ -1,31 +1,54 @@
-// Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
-// See LICENSE.txt for license information.
-
-/**
- * Throttles a function call.
- */
-export function throttle(func: (...args: any[]) => void, limit: number) {
+export function throttle<T extends (...args: any[]) => any>(func: T, limit: number): T {
     let inThrottle: boolean;
-    return (...args: any[]) => {
+    return function(this: any, ...args: any[]) {
         if (!inThrottle) {
-            func(...args);
+            func.apply(this, args);
             inThrottle = true;
-            setTimeout(() => {
-                inThrottle = false;
-            }, limit);
+            setTimeout(() => (inThrottle = false), limit);
         }
-    };
+    } as T;
 }
 
-/**
- * Converts screen coordinates to relative percentages (0.0 to 1.0).
- */
-export function getRelativeCoordinates(event: MouseEvent | WheelEvent, element: HTMLElement) {
+export function getRelativeCoordinates(e: MouseEvent | WheelEvent, element: HTMLVideoElement) {
     const rect = element.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Element size
+    const elementWidth = rect.width;
+    const elementHeight = rect.height;
+
+    // Video native size
+    const videoWidth = element.videoWidth;
+    const videoHeight = element.videoHeight;
+
+    if (videoWidth === 0 || videoHeight === 0) {
+        return {x: x / elementWidth, y: y / elementHeight};
+    }
+
+    const videoAspectRatio = videoWidth / videoHeight;
+    const elementAspectRatio = elementWidth / elementHeight;
+
+    let actualWidth = elementWidth;
+    let actualHeight = elementHeight;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    if (elementAspectRatio > videoAspectRatio) {
+        // Pillarboxed (black bars on left/right)
+        actualWidth = elementHeight * videoAspectRatio;
+        offsetX = (elementWidth - actualWidth) / 2;
+    } else {
+        // Letterboxed (black bars on top/bottom)
+        actualHeight = elementWidth / videoAspectRatio;
+        offsetY = (elementHeight - actualHeight) / 2;
+    }
+
+    const relativeX = (x - offsetX) / actualWidth;
+    const relativeY = (y - offsetY) / actualHeight;
+
     return {
-        x: Math.max(0, Math.min(1, x)),
-        y: Math.max(0, Math.min(1, y)),
+        x: Math.max(0, Math.min(1, relativeX)),
+        y: Math.max(0, Math.min(1, relativeY)),
     };
 }
