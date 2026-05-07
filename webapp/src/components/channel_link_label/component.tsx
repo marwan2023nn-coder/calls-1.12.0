@@ -38,7 +38,7 @@ const ChannelLinkLabel = (props: Props) => {
                     id='call-profiles'
                 >
                     {formatMessage({
-                        defaultMessage: '{count, plural, =1 {{list} in call} other {{list} in call}}',
+                        defaultMessage: '{count, plural, =1 {{list} في المكالمة} other {{list} في المكالمة}}',
                     }, {
                         count: props.profiles.length,
                         list: formatList(userList),
@@ -56,15 +56,15 @@ const ChannelLinkLabel = (props: Props) => {
                     height: 'auto',
                     minWidth: '20px',
 
-                    // Use logical properties to support both directions automatically
-                    marginInlineStart: 'auto',
-                    marginInlineEnd: '4px',
+                    // استخدام الخصائص المنطقية لدعم الاتجاهين تلقائياً
+                    marginInlineStart: 'auto', // في العربي سيصبح Margin من اليسار، وفي الإنجليزي من اليمين
+                    marginInlineEnd: '4px', // يضمن مسافة 4px بجانب النص في أي اتجاه
 
-                    color: '#00987e', // Pass color to the icon inside via inheritance
+                    color: '#00987e', // تمرير اللون للأيقونة بالداخل عبر التوريث
                 }}
             >
                 <ActiveCallIcon
-                    fill={'currentColor'} // Best practice: make the icon take the color of the parent span
+                    fill={'currentColor'} // أفضل ممارسة: اجعل الأيقونة تأخذ لون الـ span الأب
                     style={{
                         minWidth: '12px',
                         maxWidth: '12px',

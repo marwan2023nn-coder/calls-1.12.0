@@ -55,16 +55,16 @@ const ChannelHeaderButton = () => {
 
     let callButtonText;
     if (hasCall) {
-        callButtonText = formatMessage({defaultMessage: 'Join call'});
+        callButtonText = formatMessage({defaultMessage: 'الانضمام إلى المكالمة'});
     } else {
-        callButtonText = formatMessage({defaultMessage: 'Start call'});
+        callButtonText = formatMessage({defaultMessage: 'بدء المكالمة'});
     }
 
     if (isClientConnecting && joining) {
-        callButtonText = formatMessage({defaultMessage: 'Joining call...'});
+        callButtonText = formatMessage({defaultMessage: 'جارٍ الانضمام إلى المكالمة...'});
     } else if (isClientConnecting) {
         // eslint-disable-next-line unused-imports/no-unused-vars
-        callButtonText = formatMessage({defaultMessage: 'Starting call...'});
+        callButtonText = formatMessage({defaultMessage: 'جارٍ بدء المكالمة...'});
     }
 
     const button = (
@@ -117,7 +117,7 @@ const ChannelHeaderButton = () => {
                 rootClose={true}
                 overlay={
                     <Tooltip id='tooltip-limit-header'>
-                        {formatMessage({defaultMessage: 'Calls are not available in archived channels.'})}
+                        {formatMessage({defaultMessage: 'المكالمات غير متاحة في القنوات المؤرشفة.'})}
                     </Tooltip>
                 }
             >
@@ -133,7 +133,7 @@ const ChannelHeaderButton = () => {
                 rootClose={true}
                 overlay={
                     <Tooltip id='tooltip-limit-header'>
-                        {formatMessage({defaultMessage: 'Calls are not available in a direct message with a deactivated user.'})}
+                        {formatMessage({defaultMessage: 'المكالمات غير متاحة في المحادثة المباشرة مع مستخدم معطل.'})}
                     </Tooltip>
                 }
             >
@@ -153,7 +153,7 @@ const ChannelHeaderButton = () => {
                             {formatMessage({defaultMessage: 'Workspace Cloud Professional feature'})}
                         </Header>
                         <SubHeader>
-                            {formatMessage({defaultMessage: 'This is a paid feature, available with a 30-day free trial'})}
+                            {formatMessage({defaultMessage: 'هذه ميزة مدفوعة، متاحة مع تجربة مجانية لمدة 30 يومًا'})}
                         </SubHeader>
                     </Tooltip>
                 }
@@ -172,22 +172,22 @@ const ChannelHeaderButton = () => {
                 overlay={
                     <Tooltip id='tooltip-limit-header'>
                         <Header>
-                            {formatMessage({defaultMessage: 'This call has reached the maximum of {count, plural, =1 {one participant} other {# participants}}.'}, {count: maxCallParticipants})}
+                            {formatMessage({defaultMessage: 'هذه المكالمة وصلت إلى الحد الأقصى من {count, plural, =1 {مشارك واحد} other {# مشاركين}}.'}, {count: maxCallParticipants})}
                         </Header>
 
                         {cloudStarter && !isAdmin &&
                         <SubHeader>
-                            {formatMessage({defaultMessage: 'Contact your system admin for more information on call capacity.'})}
+                            {formatMessage({defaultMessage: 'اتصل بمسؤول النظام الخاص بك لمزيد من المعلومات حول سعة المكالمة.'})}
                         </SubHeader>
                         }
                         {cloudStarter && isAdmin &&
                         <SubHeader>
-                            {formatMessage({defaultMessage: 'Upgrade to Cloud Professional or Cloud Enterprise to enable group calls for more than {count, plural, =1 {one participant} other {# participants}}.'}, {count: maxCallParticipants})}
+                            {formatMessage({defaultMessage: 'قم بالترقية إلى Cloud Professional أو Cloud Enterprise لتمكين المكالمات الجماعية لأكثر من {count, plural, =1 {مشارك واحد} other {# مشاركين}}.'}, {count: maxCallParticipants})}
                         </SubHeader>
                         }
                         {isCloudPaid &&
                         <SubHeader>
-                            {formatMessage({defaultMessage: 'Currently, {count} is the maximum number of participants in cloud calls.'}, {count: maxCallParticipants})}
+                            {formatMessage({defaultMessage: 'حاليًا، {count} هو الحد الأقصى لعدد المشاركين في المكالمات السحابية.'}, {count: maxCallParticipants})}
                         </SubHeader>
                         }
                     </Tooltip>

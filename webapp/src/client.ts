@@ -573,12 +573,6 @@ export default class CallsClient extends EventEmitter {
                 }
             });
 
-            peer.on('remote-control-message', (msg: any) => {
-                if (window.desktopAPI?.sendRemoteControlEvent) {
-                    window.desktopAPI.sendRemoteControlEvent(msg.data);
-                }
-            });
-
             peer.on('stream', (remoteStream: MediaStream, trackInfo: TrackInfo) => {
                 logDebug('new remote stream received', remoteStream.id, 'trackInfo:', trackInfo);
                 for (const track of remoteStream.getTracks()) {
@@ -1249,9 +1243,5 @@ export default class CallsClient extends EventEmitter {
 
     public getSessionID() {
         return this.ws?.getOriginalConnID();
-    }
-
-    public sendRemoteControlEvent(event: any) {
-        this.peer?.sendRemoteControlEvent(event);
     }
 }
