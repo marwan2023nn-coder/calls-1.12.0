@@ -64,8 +64,6 @@ import {
     USER_REACTED_TIMEOUT,
     USER_SCREEN_OFF,
     USER_SCREEN_ON,
-    REMOTE_CONTROL_REQUEST,
-    REMOTE_CONTROL_GRANTED,
     USER_UNMUTED,
     USER_VIDEO_OFF,
     USER_VIDEO_ON,
@@ -1103,32 +1101,4 @@ export default combineReducers({
     liveCaptions,
     clientConnecting,
     hostControlNotices,
-    remoteControlRequests: (state: {[channelID: string]: string[]} = {}, action: any) => {
-        switch (action.type) {
-        case REMOTE_CONTROL_REQUEST:
-            return {
-                ...state,
-                [action.data.channelID]: [
-                    ...(state[action.data.channelID] || []),
-                    action.data.session_id,
-                ],
-            };
-        case REMOTE_CONTROL_GRANTED:
-            return {
-                ...state,
-                [action.data.channelID]: (state[action.data.channelID] || []).filter((id: string) => id !== action.data.session_id),
-            };
-        case USER_LEFT:
-        case CALL_END:
-            if (action.data.channelID && state[action.data.channelID]) {
-                return {
-                    ...state,
-                    [action.data.channelID]: state[action.data.channelID].filter((id: string) => id !== action.data.session_id),
-                };
-            }
-            return state;
-        default:
-            return state;
-        }
-    },
 });

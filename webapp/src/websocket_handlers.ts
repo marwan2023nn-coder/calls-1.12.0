@@ -57,8 +57,6 @@ import {
     CALL_HOST,
     CALL_LIVE_CAPTIONS_STATE,
     CALL_RECORDING_STATE,
-    REMOTE_CONTROL_REQUEST,
-    REMOTE_CONTROL_GRANTED,
     CALL_STATE,
     DISMISS_CALL,
     HOST_CONTROL_NOTICE,
@@ -235,39 +233,6 @@ export function handleUserMuted(store: Store, ev: WebSocketMessage<UserMutedUnmu
             session_id: ev.data.session_id,
         },
     });
-}
-
-export function handleRemoteControl(store: Store, ev: WebSocketMessage<any>) {
-    const channelID = ev.data.channelID || ev.broadcast.channel_id;
-    const {type, user_id, session_id} = ev.data;
-
-    if (type === 'stop') {
-        getCallsClient()?.emit('remote-control-stopped');
-        return;
-    }
-
-    if (type === 'request') {
-        store.dispatch({
-            type: REMOTE_CONTROL_REQUEST,
-            data: {
-                channelID,
-                user_id,
-                session_id,
-            },
-        });
-    } else if (type === 'grant') {
-        store.dispatch({
-            type: REMOTE_CONTROL_GRANTED,
-            data: {
-                channelID,
-                session_id,
-            },
-        });
-        if (session_id === getCallsClientSessionID()) {
-            // We were granted control.
-            getCallsClient()?.emit('remote-control-granted');
-        }
-    }
 }
 
 // NOTE: it's important this function is kept synchronous in order to guarantee the order of

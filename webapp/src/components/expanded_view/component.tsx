@@ -87,11 +87,8 @@ import {CallSettingsButton} from './call_settings';
 import ControlsButton, {CallThreadIcon, MentionsCounter, UnreadDot} from './controls_button';
 import GlobalBanner from './global_banner';
 import ParticipantsGrid from './participants_grid';
-import {getRelativeCoordinates, throttle} from 'src/utils/remote_control';
-
 import {ReactionButton, ReactionButtonRef} from './reaction_button';
 import RecordingInfoPrompt from './recording_info_prompt';
-import {RemoteControlRequestsUI} from './remote_control_ui';
 import {RemoveConfirmation} from './remove_confirmation';
 
 interface Props extends RouteComponentProps {
@@ -135,8 +132,6 @@ interface Props extends RouteComponentProps {
     openModal: <P>(modalData: ModalData<P>) => void;
     enableVideo: boolean;
     otherSessions: UserSessionState[];
-    remoteControlRequests: string[];
-    dispatch: (action: any) => void;
 }
 
 interface State {
@@ -148,7 +143,6 @@ interface State {
     alerts: CallAlertStates,
     removeConfirmation: RemoveConfirmationData | null,
     viewState: 'grid' | 'speaker',
-    remoteControlActive: boolean,
 }
 
 const StyledMediaController = styled(MediaController)`
@@ -175,7 +169,6 @@ const StyledMediaFullscreenButton = styled(MediaFullscreenButton)`
 export default class ExpandedView extends React.PureComponent<Props, State> {
     private readonly emojiButtonRef: React.RefObject<ReactionButtonRef>;
     private expandedRootRef = React.createRef<HTMLDivElement>();
-    private onMouseMoveThrottled: (e: React.MouseEvent<HTMLVideoElement>) => void;
     private pushToTalk = false;
     private screenPlayer: HTMLVideoElement | null = null;
     private callQualityBannerLocked = false;
@@ -291,7 +284,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     constructor(props: Props) {
         super(props);
         this.emojiButtonRef = React.createRef();
-        this.onMouseMoveThrottled = throttle(this.onMouseEvent('mousemove'), 50);
         this.state = {
             screenStream: null,
             selfVideoStream: null,
@@ -301,7 +293,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             alerts: CallAlertStatesDefault,
             removeConfirmation: null,
             viewState: 'speaker',
-            remoteControlActive: false,
         };
 
         if (window.opener) {
@@ -457,102 +448,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                     show: devices.length === 0,
                 },
             },
-        });
-    };
-
-    onRequestRemoteControl = () => {
-        if (!this.props.channel) {
-            return;
-        }
-        this.context.sendMessage('custom_com.workspace.calls_remote_control', {
-            type: 'request',
-            channelID: this.props.channel.id,
-        });
-    };
-
-    onGrantRemoteControl = (sessionID: string, userID: string) => {
-        if (!this.props.channel) {
-            return;
-        }
-
-        if (window.desktopAPI?.setRemoteControlState) {
-            window.desktopAPI.setRemoteControlState(true, sessionID);
-        }
-
-        this.context.sendMessage('custom_com.workspace.calls_remote_control', {
-            type: 'grant',
-            channelID: this.props.channel.id,
-            user_id: userID,
-            session_id: sessionID,
-        });
-    };
-
-    onDenyRemoteControl = (sessionID: string) => {
-        if (!this.props.channel) {
-            return;
-        }
-        this.props.dispatch({
-            type: REMOTE_CONTROL_GRANTED, // We reuse the 'granted' logic to clear the request
-            data: {
-                channelID: this.props.channel.id,
-                session_id: sessionID,
-            },
-        });
-    };
-
-    onStopRemoteControl = () => {
-        if (!this.props.channel) {
-            return;
-        }
-
-        if (window.desktopAPI?.setRemoteControlState) {
-            window.desktopAPI.setRemoteControlState(false, '');
-        }
-
-        this.context.sendMessage('custom_com.workspace.calls_remote_control', {
-            type: 'stop',
-            channelID: this.props.channel.id,
-        });
-    };
-
-    onMouseEvent = (type: string) => (e: React.MouseEvent<HTMLVideoElement>) => {
-        const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
-        if (isSharing || !this.state.remoteControlActive) {
-            return;
-        }
-        const coords = getRelativeCoordinates(e.nativeEvent, e.currentTarget);
-        getCallsClient()?.sendRemoteControlEvent({
-            type,
-            ...coords,
-            button: e.button,
-        });
-    };
-
-    onWheelEvent = (e: React.WheelEvent<HTMLVideoElement>) => {
-        const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
-        if (isSharing || !this.state.remoteControlActive) {
-            return;
-        }
-        getCallsClient()?.sendRemoteControlEvent({
-            type: 'wheel',
-            deltaX: e.deltaX,
-            deltaY: e.deltaY,
-        });
-    };
-
-    onKeyEvent = (type: string) => (e: React.KeyboardEvent) => {
-        const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
-        if (isSharing || !this.state.remoteControlActive) {
-            return;
-        }
-        getCallsClient()?.sendRemoteControlEvent({
-            type,
-            key: e.key,
-            keyCode: e.keyCode,
-            altKey: e.altKey,
-            ctrlKey: e.ctrlKey,
-            metaKey: e.metaKey,
-            shiftKey: e.shiftKey,
         });
     };
 
@@ -762,14 +657,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             this.setState({
                 screenStream: stream,
             });
-        });
-
-        callsClient.on('remote-control-granted', () => {
-            this.setState({remoteControlActive: true});
-        });
-
-        callsClient.on('remote-control-stopped', () => {
-            this.setState({remoteControlActive: false});
         });
         callsClient.on('localScreenStream', (stream: MediaStream) => {
             this.setState({
@@ -1150,7 +1037,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     renderScreenSharingPlayer = () => {
         const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
         const {formatMessage} = this.props.intl;
-
         const shouldRenderTopVideoContainer = (this.props.currentSession?.video && this.props.otherSessions.length > 0) || this.props.otherSessions.some((s) => s.video);
 
         let heightAllowance = this.shouldRenderAlertBanner() ? 164 : 124;
@@ -1193,14 +1079,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         autoPlay={true}
                         onClick={(ev) => ev.preventDefault()}
                         controls={false}
-                        onMouseMove={this.onMouseMoveThrottled}
-                        onMouseDown={this.onMouseEvent('mousedown')}
-                        onMouseUp={this.onMouseEvent('mouseup')}
-                        onWheel={this.onWheelEvent}
-                        onKeyDown={this.onKeyEvent('keydown')}
-                        onKeyUp={this.onKeyEvent('keyup')}
-                        tabIndex={0}
-                        style={{outline: 'none', cursor: this.state.remoteControlActive ? 'crosshair' : 'default'}}
                     />
                     <StyledMediaControlBar>
                         <StyledMediaFullscreenButton>
@@ -1654,17 +1532,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                                 onLiveCaptionsToggle={this.onLiveCaptionsToggle}
                                 showLiveCaptions={this.state.showLiveCaptions}
                             />
-
-                            {this.props.screenSharingSession && !isSharing &&
-                                <ControlsButton
-                                    id='calls-popout-remote-control-button'
-                                    ariaLabel={this.state.remoteControlActive ? 'Stop Remote Control' : 'Request Remote Control'}
-                                    onToggle={this.state.remoteControlActive ? () => this.setState({remoteControlActive: false}) : this.onRequestRemoteControl}
-                                    tooltipText={this.state.remoteControlActive ? 'Stop Remote Control' : 'Request Remote Control'}
-                                    icon={<CompassIcon icon={this.state.remoteControlActive ? 'remote-desktop-off' : 'remote-desktop'}/>}
-                                    bgColor={this.state.remoteControlActive ? 'rgba(var(--dnd-indicator-rgb), 0.16)' : ''}
-                                />
-                            }
                         </div>
                         <div style={{flex: '1', display: 'flex', justifyContent: 'flex-end'}}>
                             <DotMenu
@@ -1688,12 +1555,6 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         </div>
                     </div>
                 </div>
-                <RemoteControlRequestsUI
-                    requests={this.props.remoteControlRequests.map(sessionID => ({session_id: sessionID, user_id: this.props.sessionsMap[sessionID]?.user_id}))}
-                    profiles={this.props.profiles}
-                    onGrant={this.onGrantRemoteControl}
-                    onDeny={this.onDenyRemoteControl}
-                />
                 {this.state.showParticipantsList &&
                     <ul
                         id='rhs-participant-list'
