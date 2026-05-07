@@ -96,18 +96,23 @@ const mapStateToProps = (state: GlobalState) => {
         hostControlsAllowed: areHostControlsAllowed(state),
         enableVideo: callsConfig(state).EnableVideo && isDMChannel(channel),
         otherSessions: sessionsForOtherUsersInCall(state),
+        remoteControlRequests: state.remoteControlRequests[channel?.id || ''] || [],
     };
 };
 
-const mapDispatchToProps = {
-    hideExpandedView,
-    showScreenSourceModal,
+const mapDispatchToProps = (dispatch: any) => ({
+    hideExpandedView: () => dispatch(hideExpandedView()),
+    showScreenSourceModal: () => dispatch(showScreenSourceModal()),
+    dispatch,
     closeRhs,
     selectRhsPost,
     prefetchThread,
-    startCallRecording,
-    recordingPromptDismissedAt,
-    openModal: modals.openModal,
-};
+    startCallRecording: (callID: string) => dispatch(startCallRecording(callID)),
+    recordingPromptDismissedAt: (callID: string, dismissedAt: number) => dispatch(recordingPromptDismissedAt(callID, dismissedAt)),
+    openModal: (modalData: any) => dispatch(modals.openModal(modalData)),
+    closeRhs: () => dispatch(closeRhs()),
+    selectRhsPost: (postID: string) => dispatch(selectRhsPost(postID)),
+    prefetchThread: (postId: string) => dispatch(prefetchThread(postId)),
+});
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ExpandedView));

@@ -53,6 +53,7 @@ const (
 	wsEventHostScreenOff             = "host_screen_off"
 	wsEventHostLowerHand             = "host_lower_hand"
 	wsEventHostRemoved               = "host_removed"
+	wsEventRemoteControl             = "remote_control"
 
 	wsReconnectionTimeout = 10 * time.Second
 )
@@ -431,6 +432,64 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 			ReliableClusterSend: true,
 			UserIDs:             getUserIDsFromSessions(state.sessions),
 		})
+	case clientMessageTypeRemote:
+		var req struct {
+			Type      string `json:"type"`
+			UserID    string `json:"user_id"`
+			SessionID string `json:"session_id"`
+		}
+		if err := json.Unmarshal(msg.Data, &req); err != nil {
+			return fmt.Errorf("failed to unmarshal remote control request: %w", err)
+		}
+
+		state, err := p.getCallState(us.channelID, false)
+		if err != nil {
+			return fmt.Errorf("failed to get call state: %w", err)
+		}
+		if state == nil {
+			return fmt.Errorf("no call ongoing")
+		}
+
+		// Relay the message.
+		// 'request' goes to the active screen sharer.
+		// 'grant' goes to the specific user.
+		// 'stop' is broadcast to everyone in the call.
+		var broadcast *WebSocketBroadcast
+		if req.Type == "stop" {
+			broadcast = &WebSocketBroadcast{
+				ChannelID:           us.channelID,
+				ReliableClusterSend: true,
+				UserIDs:             getUserIDsFromSessions(state.sessions),
+			}
+		} else if req.Type == "grant" {
+			broadcast = &WebSocketBroadcast{
+				ChannelID:           us.channelID,
+				UserID:              req.UserID,
+				ReliableClusterSend: true,
+			}
+		} else {
+			// Find the active screen sharer for 'request'
+			sharingSessionID := state.Call.Props.ScreenSharingSessionID
+			if sharingSessionID == "" {
+				return fmt.Errorf("no one is currently sharing screen")
+			}
+			sharingSession := state.sessions[sharingSessionID]
+			if sharingSession == nil {
+				return fmt.Errorf("screen sharing session not found")
+			}
+			broadcast = &WebSocketBroadcast{
+				ChannelID:           us.channelID,
+				UserID:              sharingSession.UserID,
+				ReliableClusterSend: true,
+			}
+		}
+
+		p.publishWebSocketEvent(wsEventRemoteControl, map[string]interface{}{
+			"type":       req.Type,
+			"user_id":    us.userID,
+			"session_id": us.originalConnID,
+			"channelID":  us.channelID,
+		}, broadcast)
 	case clientMessageTypeRaiseHand, clientMessageTypeUnraiseHand:
 		evType := wsEventUserUnraiseHand
 		if msg.Type == clientMessageTypeRaiseHand {

@@ -66,7 +66,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                 <FormattedMessage
                                     defaultMessage={'Use your own WebRTC service'}
                                 />
-                                <EnterprisePill>{untranslatable('المؤسسات')}</EnterprisePill>
+                                <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>
                             </Title>
                             <VerticalSpacer $size={8}/>
                             <Text>
@@ -136,7 +136,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'RTCD Service'})}
-                            {!cloud && <EnterprisePill>{untranslatable('المؤسسات')}</EnterprisePill>}
+                            {!cloud && <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
                         </SectionTitle>
                         <div className='section-subtitle'>
                             {formatMessage({defaultMessage: 'Configure a dedicated service used to offload calls and efficiently support scalable and secure deployments'})}
