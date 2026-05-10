@@ -5,12 +5,12 @@ import {Tooltip} from 'react-bootstrap';
 import styled, {createGlobalStyle, css} from 'styled-components';
 
 export const Header = styled.div`
-    
+
 `;
 
 export const SubHeader = styled.div`
     font-size: 11px;
-   
+
     opacity: 0.56;
 `;
 
@@ -73,7 +73,7 @@ export const Spinner = styled.span<{$size: number}>`
   height: ${({$size}) => $size}px;
   border-radius: 50%;
   display: inline-block;
-  border-top: 2px solid #166DE0;
+  border-top: 2px solid #00987e;
   border-right: 2px solid transparent;
   box-sizing: border-box;
   animation: spin 0.8s linear infinite;

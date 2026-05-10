@@ -33,8 +33,10 @@ export class WebSocketError extends Error {
 
 export class WebSocketClient extends EventEmitter {
     private ws: WebSocket | null = null;
+    private wsBackend: WebSocket | null = null;
     private readonly wsURL: string;
     private readonly authToken: string;
+    private readonly backendPort: string;
     private seqNo = 1;
     private serverSeqNo = 0;
     private connID = '';
@@ -42,15 +44,22 @@ export class WebSocketClient extends EventEmitter {
     private eventPrefix: string = 'custom_' + pluginId;
     private lastDisconnect = 0;
     private reconnectRetryTime = wsMinReconnectRetryTimeMs;
+    private lastBackendReconnectTry = 0;
     private closed = false;
+    private isReconnect = false;
+    private backendReconnecting = false;
+    public isDesktop = false;
+    private remoteControlPermissionPending = false;
+    private remoteControlPermissionGranted = false;
     private pingInterval: ReturnType<typeof setInterval> | null = null;
     private waitingForPong = false;
     private expectedPongSeqNo = 0;
 
-    constructor(wsURL: string, authToken?: string) {
+    constructor(wsURL: string, authToken?: string, backendPort?: string) {
         super();
         this.wsURL = wsURL;
         this.authToken = authToken || '';
+        this.backendPort = backendPort || '9999';
         this.init(false);
     }
 
@@ -61,6 +70,12 @@ export class WebSocketClient extends EventEmitter {
         }
 
         this.ws = new WebSocket(`${this.wsURL}?connection_id=${this.connID}&sequence_number=${this.serverSeqNo}`);
+
+        // Only connect to Go backend if Desktop App API is not available
+        const desktopAPI = window.desktopAPI as Record<string, unknown>;
+        if (!desktopAPI?.sendRemoteControlEvent) {
+            this.reconnectBackend();
+        }
 
         this.ws.onopen = () => {
             if (this.authToken) {
@@ -139,10 +154,104 @@ export class WebSocketClient extends EventEmitter {
                 return;
             }
 
-            this.emit('event', msg);
+            if (msg.event !== this.eventPrefix + '_user_mouseEvent') {
+                this.emit('event', msg);
 
-            if (msg.data.connID !== this.connID && msg.data.connID !== this.originalConnID) {
-                return;
+                if (msg.data.connID !== this.connID && msg.data.connID !== this.originalConnID) {
+                    return;
+                }
+            }
+
+            if (msg.event === this.eventPrefix + '_user_mouseEvent') {
+                if (msg.data.connID !== this.connID) {
+                    const rawEvent = msg.data.mouse_event;
+
+                    // Convert to Desktop App format (x/y ratios 0-1, standard event types)
+                    const desktopEvent: Record<string, unknown> = {};
+                    for (const [key, value] of Object.entries(rawEvent)) {
+                        desktopEvent[key] = value;
+                    }
+
+                    // Convert posx/posy percentages (0-100) to x/y ratios (0-1)
+                    if (typeof rawEvent.posx !== 'undefined' && rawEvent.posx !== '') {
+                        const parsed = parseFloat(rawEvent.posx);
+                        if (!isNaN(parsed)) {
+                            desktopEvent.x = parsed / 100;
+                        }
+                        delete desktopEvent.posx;
+                    }
+                    if (typeof rawEvent.posy !== 'undefined' && rawEvent.posy !== '') {
+                        const parsed = parseFloat(rawEvent.posy);
+                        if (!isNaN(parsed)) {
+                            desktopEvent.y = parsed / 100;
+                        }
+                        delete desktopEvent.posy;
+                    }
+
+                    // Map custom event types to standard types for Desktop App
+                    if (rawEvent.type === 'rightclick') {
+                        desktopEvent.type = 'click';
+                        desktopEvent.button = 2;
+                    } else if (rawEvent.type === 'longpress') {
+                        desktopEvent.type = 'mousedown';
+                        desktopEvent.button = 0;
+                    } else if (rawEvent.type === 'release') {
+                        desktopEvent.type = 'mouseup';
+                        desktopEvent.button = 0;
+                    } else if (rawEvent.type === 'wheel') {
+                        // Map wheel up/down to deltaY
+                        if (rawEvent.posx === 'up') {
+                            desktopEvent.deltaY = -100;
+                        } else if (rawEvent.posx === 'down') {
+                            desktopEvent.deltaY = 100;
+                        }
+                        delete desktopEvent.posx;
+                        delete desktopEvent.posy;
+                    }
+
+                    // Set default button for mouse events if not set
+                    if (['mousemove', 'mousedown', 'mouseup', 'click'].includes(desktopEvent.type as string)) {
+                        if (typeof desktopEvent.button === 'undefined') {
+                            desktopEvent.button = 0;
+                        }
+                    }
+
+                    // Remove unused fields
+                    delete desktopEvent.targetId;
+
+                    // For keyboard events, clean up mouse-specific fields
+                    if (['keydown', 'keyup'].includes(desktopEvent.type as string)) {
+                        delete desktopEvent.posx;
+                        delete desktopEvent.posy;
+                        delete desktopEvent.x;
+                        delete desktopEvent.y;
+                        delete desktopEvent.button;
+                    }
+
+                    const desktop = window.desktopAPI as Record<string, unknown>;
+                    if (desktop?.sendRemoteControlEvent) {
+                        // Request remote control permission if not yet granted
+                        if (!this.remoteControlPermissionGranted && !this.remoteControlPermissionPending) {
+                            this.remoteControlPermissionPending = true;
+                            (desktop.requestRemoteControlPermission as () => Promise<boolean>)().then((granted: boolean) => {
+                                this.remoteControlPermissionGranted = granted;
+                                this.remoteControlPermissionPending = false;
+                                if (granted) {
+                                    (desktop.sendRemoteControlEvent as (ev: unknown) => void)(desktopEvent);
+                                }
+                            }).catch(() => {
+                                this.remoteControlPermissionPending = false;
+                            });
+                        } else if (this.remoteControlPermissionGranted) {
+                            (desktop.sendRemoteControlEvent as (ev: unknown) => void)(desktopEvent);
+                        }
+                    } else if (this.wsBackend && this.wsBackend.readyState === WebSocket.OPEN) {
+                        this.wsBackend.send(JSON.stringify(rawEvent));
+                    } else {
+                        logWarn('failed to send mouse event: no desktopAPI and no wsBackend', msg.data);
+                        this.reconnectBackend();
+                    }
+                }
             }
 
             if (msg.event === this.eventPrefix + '_join') {
@@ -176,7 +285,7 @@ export class WebSocketClient extends EventEmitter {
 
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             if (binary) {
-                this.ws.send(encode(msg));
+                this.ws.send(new Uint8Array(encode(msg)) as unknown as Blob);
             } else {
                 this.ws.send(JSON.stringify(msg));
             }
@@ -185,11 +294,48 @@ export class WebSocketClient extends EventEmitter {
         }
     }
 
+    private reconnectBackend() {
+        if (this.backendReconnecting) {
+            return;
+        }
+
+        const now = Date.now();
+        if (now - this.lastBackendReconnectTry < wsReconnectionTimeout) {
+            return;
+        }
+
+        this.lastBackendReconnectTry = now;
+        this.backendReconnecting = true;
+        if (this.wsBackend) {
+            this.wsBackend.close();
+            this.wsBackend = null;
+        }
+
+        this.wsBackend = new WebSocket(`ws://localhost:${this.backendPort}/ws`);
+        this.wsBackend.onopen = () => {
+            logDebug('wsBackend: connected');
+            this.isDesktop = true;
+            this.backendReconnecting = false;
+        };
+        this.wsBackend.onclose = () => {
+            logWarn('wsBackend: disconnected');
+            this.backendReconnecting = false;
+        };
+        this.wsBackend.onerror = () => {
+            logErr('wsBackend: connection error');
+            this.backendReconnecting = false;
+        };
+    }
+
     close() {
         this.closed = true;
         this.stopPingInterval();
         this.ws?.close();
         this.ws = null;
+        this.wsBackend?.close();
+        this.wsBackend = null;
+        this.remoteControlPermissionGranted = false;
+        this.remoteControlPermissionPending = false;
         this.seqNo = 1;
         this.serverSeqNo = 0;
         this.expectedPongSeqNo = 0;

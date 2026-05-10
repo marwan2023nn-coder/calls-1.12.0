@@ -176,18 +176,24 @@ export default class ScreenSourceModal extends React.PureComponent<Props, State>
     private shareScreen = () => {
         logDebug('ScreenSourceModal.shareScreen', this.state.selected, shareAudioWithScreen(), this.state.shareSystemAudio);
 
+        // Find the screenID for the selected source
+        const selectedSource = this.state.sources.find((s) => s.id === this.state.selected);
+        const screenID = (selectedSource as any)?.screenID || ''; // eslint-disable-line @typescript-eslint/no-explicit-any
+
         if (window.desktopAPI?.shareScreen) {
-            logDebug('desktopAPI.shareScreen');
-            window.desktopAPI.shareScreen(this.state.selected, shareAudioWithScreen() && this.state.shareSystemAudio);
+            logDebug('desktopAPI.shareScreen', screenID);
+            (window.desktopAPI.shareScreen as any)(this.state.selected, shareAudioWithScreen() && this.state.shareSystemAudio, screenID); // eslint-disable-line @typescript-eslint/no-explicit-any
         } else if (shouldRenderDesktopWidget()) {
             // DEPRECATED: legacy Desktop API logic (<= 5.6.0)
             sendDesktopEvent('calls-widget-share-screen', {
                 sourceID: this.state.selected,
                 withAudio: shareAudioWithScreen() && this.state.shareSystemAudio,
+                screenID,
             });
         } else {
             window.callsClient?.shareScreen(this.state.selected, shareAudioWithScreen());
         }
+
         this.hide();
     };
 
@@ -238,7 +244,7 @@ export default class ScreenSourceModal extends React.PureComponent<Props, State>
     componentDidUpdate(prevProps: Props) {
         if (!prevProps.show && this.props.show) {
             const payload = {
-                types: ['window', 'screen'] as Array<'screen' | 'window'>,
+                types: ['screen'] as Array<'screen' | 'window'>,
                 thumbnailSize: {
                     width: 400,
                     height: 400,

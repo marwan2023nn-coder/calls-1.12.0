@@ -1,15 +1,14 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-// eslint-disable max-lines
+/* eslint-disable max-lines */
 // eslint-disable-next-line simple-import-sort/imports
 import {parseRTCStats, RTCMonitor, RTCPeer} from '@mattermost/calls-common';
 import type {EmojiData, CallsClientJoinData, TrackInfo, RTPEncodingParameters} from '@mattermost/calls-common/lib/types';
-
 import {EventEmitter} from 'events';
 
 import {zlibSync, strToU8} from 'fflate';
-import {MediaDevices, CallsClientConfig, CallsClientStats, TrackMetadata} from 'src/types/types';
+import {MediaDevices, CallsClientConfig, CallsClientStats, TrackMetadata, MouseEvents} from 'src/types/types';
 
 import {logDebug, logErr, logInfo, logWarn, persistClientLogs} from './log';
 import {getScreenStream, getPersistentStorage} from './utils';
@@ -49,6 +48,13 @@ export const DefaultVideoTrackOptions: MediaTrackConstraints = {
 
 const rtcMonitorInterval = 10000;
 
+type RTCRtpCodecCapability = {
+    mimeType?: string;
+    clockRate?: number;
+    channels?: number;
+    sdpFmtpLine?: string;
+};
+
 export default class CallsClient extends EventEmitter {
     public channelID: string;
     private readonly config: CallsClientConfig;
@@ -75,6 +81,7 @@ export default class CallsClient extends EventEmitter {
     private connected = false;
     public initTime = Date.now();
     private rtcMonitor: RTCMonitor | null = null;
+    private iceRestartTimeout: ReturnType<typeof setTimeout> | null = null;
     private av1Codec: RTCRtpCodecCapability | null = null;
     private defaultAudioTrackOptions: MediaTrackConstraints;
     private defaultVideoTrackOptions: MediaTrackConstraints;
@@ -107,7 +114,7 @@ export default class CallsClient extends EventEmitter {
         };
         this.defaultVideoTrackOptions = DefaultVideoTrackOptions;
         this.defaultVideoTrackEncodings = [
-            {maxBitrate: 1000 * 1000, maxFramerate: 30, scaleResolutionDownBy: 1.0},
+            {maxBitrate: 3 * 1000 * 1000, maxFramerate: 30, scaleResolutionDownBy: 1.0},
         ];
         this.onDeviceChange = async () => {
             await this.updateDevices();
@@ -156,7 +163,7 @@ export default class CallsClient extends EventEmitter {
     private async handleAudioDeviceFallback(deviceType: string) {
         const currentDevice = deviceType === 'input' ? this.currentAudioInputDevice : this.currentAudioOutputDevice;
         const devices = deviceType === 'input' ? this.audioDevices.inputs : this.audioDevices.outputs;
-        const missingCurrentDevice = !devices.some(device => currentDevice?.deviceId === device.deviceId);
+        const missingCurrentDevice = !devices.some((device) => currentDevice?.deviceId === device.deviceId);
 
         // Fallback to the system default device if the current one is not available.
         if (missingCurrentDevice && devices.length > 0) {
@@ -533,6 +540,45 @@ export default class CallsClient extends EventEmitter {
 
             this.peer = peer;
 
+            // Monitor ICE connection state to detect and recover from
+            // disconnections that cause screen share freezes.
+            const pc = (peer as any).pc as RTCPeerConnection; // eslint-disable-line @typescript-eslint/no-explicit-any
+            if (pc) {
+                pc.oniceconnectionstatechange = () => {
+                    const state = pc.iceConnectionState;
+                    logDebug('ICE connection state change', state);
+
+                    if (state === 'disconnected') {
+                        logDebug('ICE disconnected, scheduling ICE restart attempt');
+                        if (this.iceRestartTimeout) {
+                            return;
+                        }
+                        this.iceRestartTimeout = setTimeout(async () => {
+                            this.iceRestartTimeout = null;
+                            if (this.closed || !pc || pc.connectionState === 'closed') {
+                                return;
+                            }
+                            if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+                                logDebug('ICE still disconnected/failed, attempting ICE restart');
+                                try {
+                                    const offer = await pc.createOffer({iceRestart: true});
+                                    await pc.setLocalDescription(offer);
+                                    logDebug('ICE restart offer created successfully');
+                                } catch (err) {
+                                    logErr('ICE restart failed', err);
+                                }
+                            }
+                        }, 3000);
+                    } else if (state === 'connected' || state === 'completed') {
+                        if (this.iceRestartTimeout) {
+                            clearTimeout(this.iceRestartTimeout);
+                            this.iceRestartTimeout = null;
+                            logDebug('ICE reconnected, cancelled restart timer');
+                        }
+                    }
+                };
+            }
+
             this.collectICEStats();
 
             this.rtcMonitor = new RTCMonitor({
@@ -834,6 +880,11 @@ export default class CallsClient extends EventEmitter {
 
         this.rtcMonitor?.stop();
 
+        if (this.iceRestartTimeout) {
+            clearTimeout(this.iceRestartTimeout);
+            this.iceRestartTimeout = null;
+        }
+
         this.closed = true;
         if (this.peer) {
             this.getStats().then((stats) => {
@@ -863,6 +914,7 @@ export default class CallsClient extends EventEmitter {
                 track.dispatchEvent(new Event('ended'));
             });
         });
+        this.streams = [];
     }
 
     public mute() {
@@ -962,6 +1014,10 @@ export default class CallsClient extends EventEmitter {
         }
 
         const screenTrack = screenStream.getVideoTracks()[0];
+
+        // NOTE: we purposely don't set contentHint to 'text' here as it can
+        // lead to screen share freezes on dynamic content (video, animations)
+        // due to the encoder reducing keyframe frequency.
         this.localScreenTrack = screenTrack;
 
         const screenAudioTrack = screenStream.getAudioTracks()[0];
@@ -1204,10 +1260,40 @@ export default class CallsClient extends EventEmitter {
         });
     }
 
+    public sendMouseEvent(data: MouseEvents) {
+        if (data.type !== 'mousemove') {
+            logDebug('send mouse events', data);
+        }
+        this.ws?.send('mouseEvent', {
+            data: JSON.stringify(data),
+        });
+    }
+
     public async getStats(): Promise<CallsClientStats | null> {
         if (!this.peer) {
             throw new Error('not connected');
         }
+
+        let stats: RTCStatsReport | null = null;
+        try {
+            stats = await this.peer.getStats();
+            if (stats) {
+                stats.forEach((report) => {
+                    if (report.type === 'outbound-rtp' && report.kind === 'video') {
+                        if (report.qualityLimitationReason && report.qualityLimitationReason !== 'none') {
+                            logWarn(`quality limitation detected: ${report.qualityLimitationReason}`, report);
+                        }
+                    }
+                });
+            }
+        } catch (err) {
+            logWarn('getStats: failed to retrieve peer stats', err);
+        }
+
+        // We filter out any stream that doesn't have any live tracks.
+        // This is to avoid keeping references to streams that are no longer active,
+        // which would cause a memory leak and performance degradation over time.
+        this.streams = this.streams.filter((s) => s.getTracks().some((t) => t.readyState === 'live'));
 
         const tracksInfo : TrackMetadata[] = [];
         this.streams.forEach((stream) => {
@@ -1222,8 +1308,6 @@ export default class CallsClient extends EventEmitter {
                 });
             });
         });
-
-        const stats = await this.peer.getStats();
 
         return {
             initTime: this.initTime,

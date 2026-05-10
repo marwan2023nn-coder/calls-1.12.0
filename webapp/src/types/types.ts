@@ -267,3 +267,17 @@ export const DesktopMessageShowEndCallModal = {
 export type DesktopMessage = {
     type: DesktopMessageType;
 };
+
+export type MouseEvents = {
+    type: string,
+    posx: string,
+    posy: string,
+    button?: number,
+    targetId?: string,
+    key?: string,
+    code?: string,
+    ctrlKey?: boolean,
+    shiftKey?: boolean,
+    altKey?: boolean,
+    metaKey?: boolean,
+};

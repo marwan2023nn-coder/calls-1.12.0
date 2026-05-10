@@ -33,7 +33,6 @@ import CollapseIcon from 'src/components/icons/collapse';
 import CompassIcon from 'src/components/icons/compassIcon';
 import GridViewIcon from 'src/components/icons/grid_view';
 import LeaveCallIcon from 'src/components/icons/leave_call_icon';
-import MonitorIcon from 'src/components/icons/monitor';
 import MutedIcon from 'src/components/icons/muted_icon';
 import ParticipantsIcon from 'src/components/icons/participants';
 import RecordCircleIcon from 'src/components/icons/record_circle';
@@ -172,6 +171,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     private pushToTalk = false;
     private screenPlayer: HTMLVideoElement | null = null;
     private callQualityBannerLocked = false;
+    private screenFreezeCheckInterval: ReturnType<typeof setInterval> | null = null;
 
     static contextType = window.ProductApi.WebSocketProvider;
     declare context: React.ContextType<typeof window.ProductApi.WebSocketProvider>;
@@ -280,6 +280,10 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     };
 
     private style = this.genStyle();
+    private longPressTimeout: number | null = null;
+    private isLongPress = false;
+    private lastMouseMoveTime = 0;
+    private readonly MOUSE_MOVE_THROTTLE_MS = 120; // ~8 events/sec max - prevents screen freeze
 
     constructor(props: Props) {
         super(props);
@@ -332,11 +336,30 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         }
     }
 
+    private wheelListener: ((ev: WheelEvent) => void) | null = null;
+
     setScreenPlayerRef = (node: HTMLVideoElement) => {
+        // Remove old wheel listener if any
+        if (this.screenPlayer && this.wheelListener) {
+            this.screenPlayer.removeEventListener('wheel', this.wheelListener);
+        }
+
         if (node && this.state.screenStream) {
             node.srcObject = this.state.screenStream;
+            node.play().catch(() => null);
         }
         this.screenPlayer = node;
+
+        // Add non-passive wheel listener to allow preventDefault
+        if (node) {
+            this.wheelListener = (ev: WheelEvent) => {
+                ev.preventDefault();
+                if (this.props.screenSharingSession?.session_id !== this.props.currentSession?.session_id) {
+                    this.handleWheelEvent(ev);
+                }
+            };
+            node.addEventListener('wheel', this.wheelListener, {passive: false});
+        }
     };
 
     setMissingScreenPermissions = (missing: boolean, forward?: boolean) => {
@@ -611,6 +634,15 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
 
         if (this.screenPlayer && this.state.screenStream !== prevState.screenStream) {
             this.screenPlayer.srcObject = this.state.screenStream;
+            this.screenPlayer.play().catch(() => null);
+        }
+
+        // Start freeze detection when viewing a remote screen stream
+        const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
+        if (this.state.screenStream && !prevState.screenStream && !isSharing) {
+            this.startScreenFreezeDetection();
+        } else if (!this.state.screenStream && prevState.screenStream) {
+            this.stopScreenFreezeDetection();
         }
     }
 
@@ -652,6 +684,10 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         window.addEventListener('keydown', this.handleKBShortcuts, true);
         window.addEventListener('keyup', this.handleKeyUp, true);
         window.addEventListener('blur', this.handleBlur, true);
+
+        // remote control keyboard events
+        window.addEventListener('keydown', this.handleRemoteKeyDown, true);
+        window.addEventListener('keyup', this.handleRemoteKeyUp, true);
 
         callsClient.on('remoteScreenStream', (stream: MediaStream) => {
             this.setState({
@@ -817,10 +853,54 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         }
     };
 
+    startScreenFreezeDetection = () => {
+        this.stopScreenFreezeDetection();
+        let lastTime = 0;
+        let freezeCount = 0;
+        this.screenFreezeCheckInterval = setInterval(() => {
+            if (!this.screenPlayer || !this.state.screenStream) {
+                return;
+            }
+            const video = this.screenPlayer;
+            if (video.paused && video.srcObject) {
+                logDebug('Screen freeze detected: video paused unexpectedly, attempting to resume');
+                video.play().catch(() => null);
+                return;
+            }
+
+            // Check if video frames are advancing by comparing currentTime
+            const currentTime = video.currentTime;
+            if (lastTime > 0 && currentTime === lastTime && !video.paused && video.srcObject) {
+                freezeCount++;
+                if (freezeCount >= 2) {
+                    logDebug('Screen freeze detected: frames not advancing, resetting srcObject');
+                    const stream = video.srcObject;
+                    video.srcObject = null;
+                    video.srcObject = stream;
+                    video.play().catch(() => null);
+                    freezeCount = 0;
+                }
+            } else {
+                freezeCount = 0;
+            }
+            lastTime = currentTime;
+        }, 2000);
+    };
+
+    stopScreenFreezeDetection = () => {
+        if (this.screenFreezeCheckInterval) {
+            clearInterval(this.screenFreezeCheckInterval);
+            this.screenFreezeCheckInterval = null;
+        }
+    };
+
     public componentWillUnmount() {
         window.removeEventListener('keydown', this.handleKBShortcuts, true);
         window.removeEventListener('keyup', this.handleKeyUp, true);
         window.removeEventListener('blur', this.handleBlur, true);
+        window.removeEventListener('keydown', this.handleRemoteKeyDown, true);
+        window.removeEventListener('keyup', this.handleRemoteKeyUp, true);
+        this.stopScreenFreezeDetection();
         this.#unlockNavigation?.();
         this.context?.removeFirstConnectListener(this.requestCallState);
     }
@@ -1034,6 +1114,195 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         );
     };
 
+    handleMouseMove = (ev: any) => {
+        // Throttle mouse move events to prevent flooding WebSocket and freezing
+        const now = Date.now();
+        if (now - this.lastMouseMoveTime < this.MOUSE_MOVE_THROTTLE_MS) {
+            return;
+        }
+        this.lastMouseMoveTime = now;
+
+        const videoElement = ev.target;
+        const videoWidth = videoElement.clientWidth;
+        const videoHeight = videoElement.clientHeight;
+
+        const posxPercentage = (ev.nativeEvent.offsetX / videoWidth) * 100;
+        const posyPercentage = (ev.nativeEvent.offsetY / videoHeight) * 100;
+
+        const mouseData = {
+            type: ev.type,
+            posx: posxPercentage.toFixed(2),
+            posy: posyPercentage.toFixed(2),
+            targetId: '',
+        };
+
+        const callsClient = getCallsClient();
+        callsClient?.sendMouseEvent(mouseData);
+    };
+
+    handleWheelEvent = (ev: any) => {
+        ev.preventDefault();
+
+        const mouseData = {
+            type: 'wheel',
+            posx: ev.deltaY < 0 ? 'up' : 'down',
+            posy: '',
+            targetId: '',
+        };
+
+        const callsClient = getCallsClient();
+        callsClient?.sendMouseEvent(mouseData);
+    };
+
+    startLongPress = (ev: any) => {
+        ev.preventDefault();
+        this.isLongPress = false;
+
+        this.longPressTimeout = window.setTimeout(() => {
+            this.isLongPress = true;
+            this.handleLongPress(ev);
+        }, 500);
+    };
+
+    endLongPress = (ev: any) => {
+        clearTimeout(this.longPressTimeout as number);
+
+        if (this.isLongPress) {
+            this.handleReleaseMouse(ev);
+        } else {
+            // Quick click: send a click event (preventDefault in onMouseDown blocks onClick)
+            const videoElement = ev.target;
+            const videoWidth = videoElement.clientWidth;
+            const videoHeight = videoElement.clientHeight;
+            const posxPercentage = (ev.nativeEvent.offsetX / videoWidth) * 100;
+            const posyPercentage = (ev.nativeEvent.offsetY / videoHeight) * 100;
+
+            const clickData = {
+                type: 'click',
+                posx: posxPercentage.toFixed(2),
+                posy: posyPercentage.toFixed(2),
+                targetId: '',
+            };
+            const callsClient = getCallsClient();
+            callsClient?.sendMouseEvent(clickData);
+        }
+    };
+
+    handleLongPress = (ev: any) => {
+        const videoElement = ev.target;
+        const videoWidth = videoElement.clientWidth;
+        const videoHeight = videoElement.clientHeight;
+
+        const posxPercentage = (ev.nativeEvent.offsetX / videoWidth) * 100;
+        const posyPercentage = (ev.nativeEvent.offsetY / videoHeight) * 100;
+
+        const longPressData = {
+            type: 'longpress',
+            posx: posxPercentage.toFixed(2),
+            posy: posyPercentage.toFixed(2),
+            targetId: '',
+        };
+
+        const callsClient = getCallsClient();
+        callsClient?.sendMouseEvent(longPressData);
+    };
+
+    handleReleaseMouse = (ev?: any) => {
+        let posx = '';
+        let posy = '';
+        if (ev?.target && ev?.nativeEvent) {
+            const videoElement = ev.target;
+            const videoWidth = videoElement.clientWidth;
+            const videoHeight = videoElement.clientHeight;
+            if (videoWidth && videoHeight) {
+                posx = ((ev.nativeEvent.offsetX / videoWidth) * 100).toFixed(2);
+                posy = ((ev.nativeEvent.offsetY / videoHeight) * 100).toFixed(2);
+            }
+        }
+        const releaseData = {
+            type: 'release',
+            posx,
+            posy,
+            targetId: '',
+        };
+
+        const callsClient = getCallsClient();
+        callsClient?.sendMouseEvent(releaseData);
+    };
+
+    handleRemoteKeyDown = (ev: KeyboardEvent) => {
+        const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
+        if (isSharing) {
+            return;
+        }
+
+        const keyData = {
+            type: 'keydown',
+            posx: '',
+            posy: '',
+            targetId: '',
+            key: ev.key,
+            code: ev.code,
+            ctrlKey: ev.ctrlKey,
+            shiftKey: ev.shiftKey,
+            altKey: ev.altKey,
+            metaKey: ev.metaKey,
+        };
+
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const callsClient = getCallsClient();
+        callsClient?.sendMouseEvent(keyData);
+    };
+
+    handleRemoteKeyUp = (ev: KeyboardEvent) => {
+        const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
+        if (isSharing) {
+            return;
+        }
+
+        const keyData = {
+            type: 'keyup',
+            posx: '',
+            posy: '',
+            targetId: '',
+            key: ev.key,
+            code: ev.code,
+            ctrlKey: ev.ctrlKey,
+            shiftKey: ev.shiftKey,
+            altKey: ev.altKey,
+            metaKey: ev.metaKey,
+        };
+
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const callsClient = getCallsClient();
+        callsClient?.sendMouseEvent(keyData);
+    };
+
+    handleRightClick = (ev: any) => {
+        ev.preventDefault();
+
+        const videoElement = ev.target;
+        const videoWidth = videoElement.clientWidth;
+        const videoHeight = videoElement.clientHeight;
+
+        const posxPercentage = (ev.nativeEvent.offsetX / videoWidth) * 100;
+        const posyPercentage = (ev.nativeEvent.offsetY / videoHeight) * 100;
+
+        const rightClickData = {
+            type: 'rightclick',
+            posx: posxPercentage.toFixed(2),
+            posy: posyPercentage.toFixed(2),
+            targetId: '',
+        };
+
+        const callsClient = getCallsClient();
+        callsClient?.sendMouseEvent(rightClickData);
+    };
+
     renderScreenSharingPlayer = () => {
         const isSharing = this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id;
         const {formatMessage} = this.props.intl;
@@ -1077,8 +1346,35 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         ref={this.setScreenPlayerRef}
                         muted={true}
                         autoPlay={true}
-                        onClick={(ev) => ev.preventDefault()}
+                        onClick={(ev) => {
+                            ev.preventDefault();
+                            if (!isSharing) {
+                                this.handleMouseMove(ev);
+                            }
+                        }}
                         controls={false}
+                        onMouseMove={(ev) => {
+                            ev.preventDefault();
+                            if (!isSharing) {
+                                this.handleMouseMove(ev);
+                            }
+                        }}
+                        onMouseDown={(ev) => {
+                            ev.preventDefault();
+                            if (!isSharing) {
+                                this.startLongPress(ev);
+                            }
+                        }}
+                        onMouseUp={(ev) => {
+                            ev.preventDefault();
+                            if (!isSharing) {
+                                this.endLongPress(ev);
+                            }
+                        }}
+                        onContextMenu={this.handleRightClick}
+                        style={{
+                            cursor: isSharing ? 'default' : 'none',
+                        }}
                     />
                     <StyledMediaControlBar>
                         <StyledMediaFullscreenButton>
@@ -1938,6 +2234,7 @@ const VideoProfile = (props: VideoProfileProps) => {
     useEffect(() => {
         if (videoEl && props.stream) {
             videoEl.srcObject = props.stream;
+            videoEl.play().catch(() => null);
         }
     }, [props.stream, videoEl]);
 

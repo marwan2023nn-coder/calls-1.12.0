@@ -53,6 +53,7 @@ const (
 	wsEventHostScreenOff             = "host_screen_off"
 	wsEventHostLowerHand             = "host_lower_hand"
 	wsEventHostRemoved               = "host_removed"
+	wsEventUserMouseEvent            = "user_mouseEvent"
 
 	wsReconnectionTimeout = 10 * time.Second
 )
@@ -93,6 +94,47 @@ type callsJoinData struct {
 	CallsClientJoinData
 	remoteAddr string
 	xff        string
+}
+
+type MouseEvents struct {
+	Type     string `json:"type"`
+	PosX     string `json:"posx"`
+	PosY     string `json:"posy"`
+	TargetID string `json:"targetId"`
+	Key      string `json:"key,omitempty"`
+	Code     string `json:"code,omitempty"`
+	CtrlKey  bool   `json:"ctrlKey,omitempty"`
+	ShiftKey bool   `json:"shiftKey,omitempty"`
+	AltKey   bool   `json:"altKey,omitempty"`
+	MetaKey  bool   `json:"metaKey,omitempty"`
+}
+
+func (me MouseEvents) toMap() map[string]interface{} {
+	m := map[string]interface{}{
+		"type":     me.Type,
+		"posx":     me.PosX,
+		"posy":     me.PosY,
+		"targetId": me.TargetID,
+	}
+	if me.Key != "" {
+		m["key"] = me.Key
+	}
+	if me.Code != "" {
+		m["code"] = me.Code
+	}
+	if me.CtrlKey {
+		m["ctrlKey"] = me.CtrlKey
+	}
+	if me.ShiftKey {
+		m["shiftKey"] = me.ShiftKey
+	}
+	if me.AltKey {
+		m["altKey"] = me.AltKey
+	}
+	if me.MetaKey {
+		m["metaKey"] = me.MetaKey
+	}
+	return m
 }
 
 type WebSocketBroadcast struct {
@@ -491,6 +533,35 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 		}, &WebSocketBroadcast{
 			ChannelID: us.channelID,
 			UserIDs:   getUserIDsFromSessions(sessions),
+		})
+	case clientMessageTypeMouseEvent:
+		evType := wsEventUserMouseEvent
+
+		var mouseEvents MouseEvents
+		if err := json.Unmarshal(msg.Data, &mouseEvents); err != nil {
+			return fmt.Errorf("failed to unmarshal MouseEvents data: %w", err)
+		}
+
+		sessions, err := p.store.GetCallSessions(us.callID, db.GetCallSessionOpts{})
+		if err != nil {
+			return fmt.Errorf("failed to get call sessions: %w", err)
+		}
+
+		var r []string
+		for _, i := range getUserIDsFromSessions(sessions) {
+			if i != us.userID {
+				r = append(r, i)
+			}
+		}
+
+		p.publishWebSocketEvent(evType, map[string]interface{}{
+			"user_id":     us.userID,
+			"session_id":  us.originalConnID,
+			"mouse_event": mouseEvents.toMap(),
+			"timestamp":   time.Now().UnixMilli(),
+		}, &WebSocketBroadcast{
+			ChannelID: us.channelID,
+			UserIDs:   r,
 		})
 	default:
 		return fmt.Errorf("invalid client message type %q", msg.Type)
@@ -1312,6 +1383,13 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 		msgData, ok := req.Data["data"].(string)
 		if !ok {
 			p.LogError("invalid or missing reaction data")
+			return
+		}
+		msg.Data = []byte(msgData)
+	case clientMessageTypeMouseEvent:
+		msgData, ok := req.Data["data"].(string)
+		if !ok {
+			p.LogError("invalid or missing mouse event data")
 			return
 		}
 		msg.Data = []byte(msgData)
