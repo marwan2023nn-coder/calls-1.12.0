@@ -49,7 +49,7 @@ export default function TURNStaticAuthSecret(props: CustomComponentProps) {
                     data-testid={props.id + 'input'}
                     id={props.id}
                     className={disabled ? 'form-control disabled' : 'form-control'}
-                    type={'input'}
+                    type={'password'}
                     placeholder={placeholder}
                     value={value}
                     onChange={handleChange}

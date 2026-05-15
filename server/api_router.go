@@ -181,7 +181,8 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 
 			if userID := r.Header.Get("Mattermost-User-Id"); userID != "" {
 				if err := p.checkAPIRateLimits(userID); err != nil {
-					http.Error(w, err.Error(), http.StatusTooManyRequests)
+					p.LogWarn("API rate limit exceeded", "userID", userID, "err", err.Error())
+					http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
 					return
 				}
 			}

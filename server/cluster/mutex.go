@@ -5,8 +5,9 @@ package cluster
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
-	"math/rand"
+	"math/big"
 	"sync"
 	"time"
 
@@ -216,7 +217,11 @@ func (m *Mutex) Lock(ctx context.Context) error {
 		if pollTime > maxPollInterval {
 			pollTime = maxPollInterval
 		}
-		jitter := time.Duration(rand.Int63n(pollTime.Nanoseconds()))
+
+		var jitter time.Duration
+		if n, err := rand.Int(rand.Reader, big.NewInt(pollTime.Nanoseconds())); err == nil {
+			jitter = time.Duration(n.Int64())
+		}
 
 		select {
 		case <-ctx.Done():

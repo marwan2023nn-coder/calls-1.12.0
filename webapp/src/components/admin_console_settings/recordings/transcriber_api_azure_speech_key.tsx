@@ -61,7 +61,7 @@ const TranscribeAPIAzureSpeechKey = (props: CustomComponentProps) => {
                     data-testid={props.id + 'input'}
                     id={props.id}
                     className={disabled ? 'form-control disabled' : 'form-control'}
-                    type={'input'}
+                    type={'password'}
                     value={value}
                     onChange={handleChange}
                     disabled={disabled}

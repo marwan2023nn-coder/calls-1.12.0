@@ -59,7 +59,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 	channel, err := p.store.GetCallsChannel(channelID, db.GetCallsChannelOpts{})
 	if err != nil && !errors.Is(err, db.ErrNotFound) {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -74,7 +74,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 	call, err := p.store.GetActiveCallByChannelID(channelID, db.GetCallOpts{})
 	if err != nil && !errors.Is(err, db.ErrNotFound) {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -90,7 +90,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 	cs, err := p.getCallStateFromCall(call, false)
 	if err != nil {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -121,7 +121,7 @@ func (p *Plugin) handleGetCallActive(w http.ResponseWriter, r *http.Request) {
 	active, err := p.store.GetCallActive(channelID, db.GetCallOpts{FromWriter: true})
 	if err != nil {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -160,7 +160,7 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 		cms, appErr := p.API.GetChannelMembersForUser("", userID, page, perPage)
 		if appErr != nil {
 			p.LogError(appErr.Error())
-			http.Error(w, appErr.Error(), http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 		for i := range cms {
@@ -175,14 +175,14 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 	channels, err := p.store.GetAllCallsChannels(db.GetCallsChannelOpts{})
 	if err != nil {
 		p.LogError("failed to get all calls channels", "err", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	calls, err := p.store.GetAllActiveCalls(db.GetCallOpts{})
 	if err != nil {
 		p.LogError("failed to get all active calls", "err", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -209,7 +209,7 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 			cs, err := p.getCallStateFromCall(call, false)
 			if err != nil {
 				p.LogError(err.Error())
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			channelData["call"] = cs.getClientState(p.getBotID(), userID)
@@ -227,7 +227,7 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 		cs, err := p.getCallStateFromCall(call, false)
 		if err != nil {
 			p.LogError(err.Error())
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
@@ -323,11 +323,13 @@ func (p *Plugin) handleServeStandalone(w http.ResponseWriter, r *http.Request) {
 	bundlePath, err := p.API.GetBundlePath()
 	if err != nil {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	standalonePath := filepath.Join(bundlePath, "standalone/dist/")
+
+	w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' wss: ws:; frame-ancestors 'self';")
 
 	http.StripPrefix("/standalone/", http.FileServer(http.Dir(standalonePath))).ServeHTTP(w, r)
 }

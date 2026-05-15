@@ -5,10 +5,11 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math/rand"
+	"math/big"
 	"net"
 	"net/http"
 	"net/url"
@@ -146,7 +147,11 @@ func (m *rtcdClientManager) hostsChecker() {
 
 					// We add some jitter to try and avoid multiple clients to attempt
 					// authentication/registration all at the same exact time.
-					time.Sleep(time.Duration(rand.Intn(baseReconnectIntervalMs)) * time.Millisecond)
+					jitter := int64(0)
+					if n, err := rand.Int(rand.Reader, big.NewInt(baseReconnectIntervalMs)); err == nil {
+						jitter = n.Int64()
+					}
+					time.Sleep(time.Duration(jitter) * time.Millisecond)
 
 					m.ctx.LogDebug("creating client for missing host", "host", ip)
 					client, err := m.newRTCDClient(m.rtcdURL, ip, getDialFn(ip, m.rtcdPort))
@@ -270,7 +275,11 @@ func (m *rtcdClientManager) GetHostForNewCall() (string, error) {
 
 	// Fallback to random choice if we couldn't get system info.
 	if hostWithMinLoad == nil {
-		hostWithMinLoad = hostsAvailable[rand.Intn(len(hostsAvailable))]
+		idx := 0
+		if n, err := rand.Int(rand.Reader, big.NewInt(int64(len(hostsAvailable)))); err == nil {
+			idx = int(n.Int64())
+		}
+		hostWithMinLoad = hostsAvailable[idx]
 	}
 
 	return hostWithMinLoad.ip, nil
@@ -467,7 +476,11 @@ func (m *rtcdClientManager) getRTCDClientConfig(rtcdURL string) (rtcd.ClientConf
 
 	// We add some jitter to try and avoid multiple clients to attempt
 	// authentication/registration all at the same exact time.
-	cfg.ReconnectInterval = time.Duration(rand.Intn(baseReconnectIntervalMs)) * time.Millisecond
+	jitter := int64(0)
+	if n, err := rand.Int(rand.Reader, big.NewInt(baseReconnectIntervalMs)); err == nil {
+		jitter = n.Int64()
+	}
+	cfg.ReconnectInterval = time.Duration(jitter) * time.Millisecond
 
 	// Give precedence to environment to override everything else.
 	cfg.ClientID = os.Getenv("MM_CLOUD_INSTALLATION_ID")
