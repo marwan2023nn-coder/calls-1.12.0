@@ -59,7 +59,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 	channel, err := p.store.GetCallsChannel(channelID, db.GetCallsChannelOpts{})
 	if err != nil && !errors.Is(err, db.ErrNotFound) {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -74,7 +74,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 	call, err := p.store.GetActiveCallByChannelID(channelID, db.GetCallOpts{})
 	if err != nil && !errors.Is(err, db.ErrNotFound) {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -90,7 +90,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 	cs, err := p.getCallStateFromCall(call, false)
 	if err != nil {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -121,7 +121,7 @@ func (p *Plugin) handleGetCallActive(w http.ResponseWriter, r *http.Request) {
 	active, err := p.store.GetCallActive(channelID, db.GetCallOpts{FromWriter: true})
 	if err != nil {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -150,6 +150,11 @@ func (p *Plugin) hasPermissionToChannel(cm *model.ChannelMember, perm *model.Per
 
 func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Request) {
 	userID := r.Header.Get("Mattermost-User-Id")
+	teamID := r.URL.Query().Get("team_id")
+	if teamID == "" {
+		http.Error(w, "team_id is required", http.StatusBadRequest)
+		return
+	}
 
 	channelMembers := map[string]*model.ChannelMember{}
 	var page int
@@ -157,10 +162,10 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 
 	// getting all channel members for the asking user.
 	for {
-		cms, appErr := p.API.GetChannelMembersForUser("", userID, page, perPage)
+		cms, appErr := p.API.GetChannelMembersForUser(teamID, userID, page, perPage)
 		if appErr != nil {
 			p.LogError(appErr.Error())
-			http.Error(w, appErr.Error(), http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 		for i := range cms {
@@ -175,14 +180,14 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 	channels, err := p.store.GetAllCallsChannels(db.GetCallsChannelOpts{})
 	if err != nil {
 		p.LogError("failed to get all calls channels", "err", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	calls, err := p.store.GetAllActiveCalls(db.GetCallOpts{})
 	if err != nil {
 		p.LogError("failed to get all active calls", "err", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -209,8 +214,7 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 			cs, err := p.getCallStateFromCall(call, false)
 			if err != nil {
 				p.LogError(err.Error())
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
+				continue
 			}
 			channelData["call"] = cs.getClientState(p.getBotID(), userID)
 			delete(callsMap, ch.ChannelID)
@@ -227,8 +231,7 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 		cs, err := p.getCallStateFromCall(call, false)
 		if err != nil {
 			p.LogError(err.Error())
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			continue
 		}
 
 		data = append(data, map[string]any{
@@ -323,7 +326,7 @@ func (p *Plugin) handleServeStandalone(w http.ResponseWriter, r *http.Request) {
 	bundlePath, err := p.API.GetBundlePath()
 	if err != nil {
 		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

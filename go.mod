@@ -32,10 +32,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-replace github.com/pion/interceptor v0.1.44 => github.com/bgardner8008/interceptor v0.1.44-mm-mods
-
-replace github.com/pion/ice/v4 => github.com/bgardner8008/ice/v4 v4.2.0-role-conflict-fix-v4
-
 // Force all old genproto imports to use the new split modules.
 // This replaces the old monolithic google.golang.org/genproto with a newer version
 // to avoid ambiguous imports with the new split modules (googleapis/rpc).

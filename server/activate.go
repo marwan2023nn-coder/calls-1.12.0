@@ -130,7 +130,9 @@ func (p *Plugin) OnActivate() (retErr error) {
 		p.LogError(err.Error())
 		return err
 	}
+	p.mut.Lock()
 	p.botSession = session
+	p.mut.Unlock()
 
 	if appErr := p.API.SetProfileImage(session.UserId, pluginIconData); appErr != nil {
 		p.LogError(appErr.Error())
@@ -250,8 +252,12 @@ func (p *Plugin) OnDeactivate() error {
 		p.LogError(err.Error())
 	}
 
-	if p.botSession != nil {
-		if err := p.API.RevokeSession(p.botSession.Id); err != nil {
+	p.mut.RLock()
+	botSession := p.botSession
+	p.mut.RUnlock()
+
+	if botSession != nil {
+		if err := p.API.RevokeSession(botSession.Id); err != nil {
 			p.LogError(err.Error())
 		}
 	}

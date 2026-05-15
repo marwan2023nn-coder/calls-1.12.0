@@ -67,9 +67,6 @@ type configuration struct {
 	// When set to true the RTC service will work in dual-stack mode, listening for IPv6
 	// connections and generating candidates in addition to IPv4 ones.
 	EnableIPv6 *bool
-	// Ringing is default off (for now -- 8.0), allow sysadmins to turn it on.
-	// When set to true it enables ringing for DM/GM channels.
-	EnableRinging *bool
 	// The speech-to-text model size to use to transcribe calls.
 	TranscriberModelSize transcriber.ModelSize
 	// The speech-to-text API to use to transcribe calls.
@@ -95,9 +92,6 @@ type configuration struct {
 }
 
 type ClientConfig struct {
-	// **DEPRECATED: use ICEServersConfigs** A comma separated list of ICE servers URLs (STUN/TURN) to use.
-	ICEServers ICEServers
-
 	// A list of ICE server configurations to use.
 	ICEServersConfigs ICEServersConfigs
 	// AllowEnableCalls is always true. DO NOT REMOVE; needed for mobile backward compatibility.
@@ -138,7 +132,7 @@ type ClientConfig struct {
 	GroupCallsAllowed bool
 	// When set to true it enables experimental support for using the data channel for signaling.
 	EnableDCSignaling *bool
-	// When set to try it enables video calls in direct message channels.
+	// When set to true it enables video calls in direct message channels.
 	EnableVideo *bool
 }
 
@@ -383,11 +377,6 @@ func (c *configuration) Clone() *configuration {
 		cfg.DefaultEnabled = model.NewPointer(*c.DefaultEnabled)
 	}
 
-	if c.ICEServers != nil {
-		cfg.ICEServers = make(ICEServers, len(c.ICEServers))
-		copy(cfg.ICEServers, c.ICEServers)
-	}
-
 	if c.ICEServersConfigs != nil {
 		cfg.ICEServersConfigs = make([]rtc.ICEServerConfig, len(c.ICEServersConfigs))
 		copy(cfg.ICEServersConfigs, c.ICEServersConfigs)
@@ -519,7 +508,6 @@ func (p *Plugin) getClientConfig(c *configuration) ClientConfig {
 	return ClientConfig{
 		AllowEnableCalls:     model.NewPointer(true), // always true
 		DefaultEnabled:       c.DefaultEnabled,
-		ICEServers:           c.ICEServers,
 		ICEServersConfigs:    c.getICEServers(true),
 		MaxCallParticipants:  c.MaxCallParticipants,
 		NeedsTURNCredentials: model.NewPointer(c.TURNStaticAuthSecret != "" && len(c.ICEServersConfigs.getTURNConfigsForCredentials()) > 0),

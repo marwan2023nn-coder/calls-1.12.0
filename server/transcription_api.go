@@ -167,7 +167,10 @@ func (p *Plugin) startTranscribingJob(state *callState, callID, userID, trID str
 	// We don't want to keep the lock while making the API call to the service since it
 	// could take a while to return. We lock again as soon as this returns.
 	p.unlockCall(callID)
-	trJobID, jobErr := p.getJobService().RunJob(job.TypeTranscribing, callID, state.Call.PostID, trState.ID, p.botSession.Token)
+	p.mut.RLock()
+	botSession := p.botSession
+	p.mut.RUnlock()
+	trJobID, jobErr := p.getJobService().RunJob(job.TypeTranscribing, callID, state.Call.PostID, trState.ID, botSession.Token)
 	state, err := p.lockCallReturnState(callID)
 	if err != nil {
 		return fmt.Errorf("failed to lock call: %w", err)
