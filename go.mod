@@ -19,7 +19,7 @@ require (
 	github.com/mattermost/calls-recorder v0.8.8
 	github.com/mattermost/calls-transcriber v0.7.1
 	github.com/mattermost/logr/v2 v2.0.21
-	github.com/mattermost/mattermost-plugin-calls/server/public v0.0.3
+	github.com/mattermost/mattermost-plugin-calls/server/public v0.0.3-0.20231103204030-06bd54bcfa67
 	github.com/mattermost/mattermost/server/public v0.1.10
 	github.com/mattermost/morph v1.1.0
 	github.com/mattermost/rtcd v1.2.5
@@ -31,6 +31,10 @@ require (
 	golang.org/x/time v0.10.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+replace github.com/pion/interceptor v0.1.44 => github.com/bgardner8008/interceptor v0.1.44-mm-mods
+
+replace github.com/pion/ice/v4 => github.com/bgardner8008/ice/v4 v4.2.0-role-conflict-fix-v4
 
 // Force all old genproto imports to use the new split modules.
 // This replaces the old monolithic google.golang.org/genproto with a newer version
@@ -175,3 +179,5 @@ exclude (
 	github.com/dyatlov/go-opengraph v0.0.0-20210112100619-dae8665a5b09
 	github.com/willf/bitset v1.2.0
 )
+
+replace github.com/mattermost/mattermost-plugin-calls/server/public => ./server/public

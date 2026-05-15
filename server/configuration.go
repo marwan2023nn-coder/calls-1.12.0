@@ -749,11 +749,6 @@ func (c *configuration) getICEServers(forClient bool) ICEServersConfigs {
 		iceServers = append(iceServers, cfg)
 	}
 
-	if len(c.ICEServers) > 0 {
-		iceServers = append(iceServers, rtc.ICEServerConfig{
-			URLs: c.ICEServers,
-		})
-	}
 
 	return iceServers
 }
