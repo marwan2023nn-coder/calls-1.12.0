@@ -3,9 +3,9 @@
 ## [Unreleased]
 
 ### Fixed
-- Reverted plugin ID to `com.mattermost.calls` for consistency with official identity.
+- Updated plugin ID to `com.workspace.calls` as per requirements.
 - Updated `homepage_url` and `support_url` to point to the official Mattermost repository.
-- Replaced custom workspace STUN server with a reliable public STUN server (`stun:stun.example.com:3478`).
+- Replaced custom workspace STUN server with a reliable public STUN server (`stun:stun.l.google.com:19302`).
 - Sanitized HTTP error responses to prevent leaking internal implementation details to clients.
 - Enforced `team_id` requirement in `handleGetAllCallChannelStates` to prevent cross-team information leakage.
 - Implemented thread-safe access to `p.botSession` using mutex locks.

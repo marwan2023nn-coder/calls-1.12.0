@@ -749,7 +749,6 @@ func (c *configuration) getICEServers(forClient bool) ICEServersConfigs {
 		iceServers = append(iceServers, cfg)
 	}
 
-
 	return iceServers
 }
 
