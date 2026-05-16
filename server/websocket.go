@@ -103,10 +103,10 @@ type MouseEvents struct {
 	TargetID string `json:"targetId"`
 	Key      string `json:"key,omitempty"`
 	Code     string `json:"code,omitempty"`
-	CtrlKey  bool   `json:"ctrlKey,omitempty"`
-	ShiftKey bool   `json:"shiftKey,omitempty"`
-	AltKey   bool   `json:"altKey,omitempty"`
-	MetaKey  bool   `json:"metaKey,omitempty"`
+	CtrlKey  bool   `json:"ctrlKey"`
+	ShiftKey bool   `json:"shiftKey"`
+	AltKey   bool   `json:"altKey"`
+	MetaKey  bool   `json:"metaKey"`
 }
 
 func (me MouseEvents) toMap() map[string]interface{} {
@@ -115,24 +115,16 @@ func (me MouseEvents) toMap() map[string]interface{} {
 		"posx":     me.PosX,
 		"posy":     me.PosY,
 		"targetId": me.TargetID,
+		"ctrlKey":  me.CtrlKey,
+		"shiftKey": me.ShiftKey,
+		"altKey":   me.AltKey,
+		"metaKey":  me.MetaKey,
 	}
 	if me.Key != "" {
 		m["key"] = me.Key
 	}
 	if me.Code != "" {
 		m["code"] = me.Code
-	}
-	if me.CtrlKey {
-		m["ctrlKey"] = me.CtrlKey
-	}
-	if me.ShiftKey {
-		m["shiftKey"] = me.ShiftKey
-	}
-	if me.AltKey {
-		m["altKey"] = me.AltKey
-	}
-	if me.MetaKey {
-		m["metaKey"] = me.MetaKey
 	}
 	return m
 }
@@ -833,7 +825,7 @@ func (p *Plugin) handleJoin(userID, connID, authSessionID string, joinData calls
 				p.API.SendEphemeralPost(
 					userID,
 					&model.Post{
-						UserId:    p.botSession.UserId,
+						UserId:    p.getBotID(),
 						ChannelId: channelID,
 						Message:   "Currently calls are not enabled for non-admin users. You can change the setting through the system console",
 					},

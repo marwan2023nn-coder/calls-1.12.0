@@ -18,6 +18,8 @@ import (
 )
 
 func (p *Plugin) getBotID() string {
+	p.mut.RLock()
+	defer p.mut.RUnlock()
 	if p.botSession != nil {
 		return p.botSession.UserId
 	}

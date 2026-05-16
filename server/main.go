@@ -22,7 +22,7 @@ var (
 // This value should be high enough to handle up to N events where N is the maximum
 // expected number of concurrent user sessions in calls handled by a single
 // instance.
-const clusterEventQueueSize = 4096
+const clusterEventQueueSize = 8192
 
 func main() {
 	p := &Plugin{

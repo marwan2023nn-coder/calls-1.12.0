@@ -112,9 +112,12 @@ func (s *Store) Close() error {
 		s.log.Error("failed to close writer db", mlog.Err(err))
 		ret = err
 	}
-	if err := s.rDB.Close(); err != nil {
-		s.log.Error("failed to close reader db", mlog.Err(err))
-		ret = err
+
+	if s.rDB != nil && s.rDB != s.wDB {
+		if err := s.rDB.Close(); err != nil {
+			s.log.Error("failed to close reader db", mlog.Err(err))
+			ret = err
+		}
 	}
 
 	return ret

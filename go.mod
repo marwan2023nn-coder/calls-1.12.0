@@ -19,7 +19,7 @@ require (
 	github.com/mattermost/calls-recorder v0.8.8
 	github.com/mattermost/calls-transcriber v0.7.1
 	github.com/mattermost/logr/v2 v2.0.21
-	github.com/mattermost/mattermost-plugin-calls/server/public v0.0.3
+	github.com/mattermost/mattermost-plugin-calls/server/public v0.0.3-0.20231103204030-06bd54bcfa67
 	github.com/mattermost/mattermost/server/public v0.1.10
 	github.com/mattermost/morph v1.1.0
 	github.com/mattermost/rtcd v1.2.5
@@ -179,3 +179,5 @@ exclude (
 	github.com/dyatlov/go-opengraph v0.0.0-20210112100619-dae8665a5b09
 	github.com/willf/bitset v1.2.0
 )
+
+replace github.com/mattermost/mattermost-plugin-calls/server/public => ./server/public

@@ -137,7 +137,7 @@ func (p *Plugin) OnPluginClusterEvent(_ *plugin.Context, ev model.PluginClusterE
 	select {
 	case p.clusterEvCh <- ev:
 	default:
-		p.LogError("too many cluster events, channel is full, dropping.")
+		p.LogError("too many cluster events, channel is full, dropping.", "evID", ev.Id, "len", len(p.clusterEvCh))
 	}
 }
 
@@ -400,7 +400,10 @@ func (p *Plugin) ServeMetrics(_ *plugin.Context, w http.ResponseWriter, r *http.
 // Both Plugin and Calls bot should still be able to do it though.
 func (p *Plugin) MessageWillBeUpdated(c *plugin.Context, newPost, oldPost *model.Post) (*model.Post, string) {
 	if oldPost != nil && oldPost.Type == callStartPostType && c != nil && c.SessionId != "" {
-		if p.botSession == nil || c.SessionId != p.botSession.Id {
+		p.mut.RLock()
+		botSession := p.botSession
+		p.mut.RUnlock()
+		if botSession == nil || c.SessionId != botSession.Id {
 			return nil, "you are not allowed to edit a call post"
 		}
 	}
