@@ -52,7 +52,7 @@ const TranscribeAPIAzureSpeechKey = (props: CustomComponentProps) => {
                         data-testid={props.id + 'label'}
                         htmlFor={props.id}
                     >
-                        {formatMessage({defaultMessage: 'Azure API Key'})}
+                        {formatMessage({defaultMessage: 'مفتاح Azure API Key'})}
                     </label>
                 </LabelRow>
             </div>
@@ -70,12 +70,12 @@ const TranscribeAPIAzureSpeechKey = (props: CustomComponentProps) => {
                     data-testid={props.id + 'help-text'}
                     className='help-text'
                 >
-                    {formatMessage({defaultMessage: 'The API key for Azure Speech Services'})}
+                    {formatMessage({defaultMessage: 'مفتاح API لخدمات Azure Speech Services'})}
                 </div>
 
                 {overridden &&
                 <div className='alert alert-warning'>
-                    {formatMessage({defaultMessage: 'This setting has been set through an environment variable. It cannot be changed through the System Console.'})}
+                    {formatMessage({defaultMessage: 'تم تعيين هذا الإعداد من خلال متغير بيئة. لا يمكن تغييره من خلال وحدة تحكم النظام.'})}
                 </div>
                 }
             </div>

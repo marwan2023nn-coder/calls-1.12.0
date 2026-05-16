@@ -69,6 +69,12 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 				return
 			}
 
+			if cfg := p.API.GetConfig(); cfg == nil || cfg.LogSettings.EnableDiagnostics == nil || !*cfg.LogSettings.EnableDiagnostics {
+				res.Err = "Diagnostics disabled"
+				res.Code = http.StatusForbidden
+				return
+			}
+
 			next.ServeHTTP(w, r)
 		})
 	})

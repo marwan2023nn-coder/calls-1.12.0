@@ -40,7 +40,7 @@ export default function TURNStaticAuthSecret(props: CustomComponentProps) {
                         data-testid={props.id + 'label'}
                         htmlFor={props.id}
                     >
-                        {formatMessage({defaultMessage: 'TURN Static Auth Secret'})}
+                        {formatMessage({defaultMessage: 'سر المصادقة الثابتة TURN'})}
                     </label>
                 </LabelRow>
             </div>
@@ -59,12 +59,12 @@ export default function TURNStaticAuthSecret(props: CustomComponentProps) {
                     data-testid={props.id + 'help-text'}
                     className='help-text'
                 >
-                    {formatMessage({defaultMessage: '(Optional) The secret key used to generate TURN short-lived authentication credentials.'})}
+                    {formatMessage({defaultMessage: '(اختياري) المفتاح السري المستخدم لإنشاء بيانات اعتماد مصادقة TURN قصيرة الأجل.'})}
                 </div>
 
                 {overridden &&
                 <div className='alert alert-warning'>
-                    {formatMessage({defaultMessage: 'This setting has been set through an environment variable. It cannot be changed through the System Console.'})}
+                    {formatMessage({defaultMessage: 'تم تعيين هذا الإعداد من خلال متغير بيئة. لا يمكن تغييره من خلال وحدة تحكم النظام.'})}
                 </div>
                 }
             </div>
