@@ -55,8 +55,8 @@ describe('TURNStaticAuthSecret', () => {
     it('should render correctly with default value', () => {
         renderComponent();
 
-        expect(screen.getByText('TURN Static Auth Secret')).toBeInTheDocument();
-        expect(screen.getByText('(Optional) The secret key used to generate TURN short-lived authentication credentials.')).toBeInTheDocument();
+        expect(screen.getByText('سر المصادقة الثابتة TURN')).toBeInTheDocument();
+        expect(screen.getByText('(اختياري) المفتاح السري المستخدم لإنشاء بيانات اعتماد مصادقة TURN قصيرة الأجل.')).toBeInTheDocument();
 
         const input = screen.getByTestId('TURNStaticAuthSecretinput');
         expect(input).toHaveValue('secret123');
@@ -92,7 +92,7 @@ describe('TURNStaticAuthSecret', () => {
             },
         });
 
-        expect(screen.getByText('This setting has been set through an environment variable. It cannot be changed through the System Console.')).toBeInTheDocument();
+        expect(screen.getByText('تم تعيين هذا الإعداد من خلال متغير بيئة. لا يمكن تغييره من خلال وحدة تحكم النظام.')).toBeInTheDocument();
         expect(screen.getByTestId('TURNStaticAuthSecretinput')).toBeDisabled();
     });
 });

@@ -69,6 +69,12 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 				return
 			}
 
+			if cfg := p.API.GetConfig(); cfg == nil || cfg.LogSettings.EnableDiagnostics == nil || !*cfg.LogSettings.EnableDiagnostics {
+				res.Err = "Diagnostics disabled"
+				res.Code = http.StatusForbidden
+				return
+			}
+
 			next.ServeHTTP(w, r)
 		})
 	})
@@ -181,7 +187,8 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 
 			if userID := r.Header.Get("Mattermost-User-Id"); userID != "" {
 				if err := p.checkAPIRateLimits(userID); err != nil {
-					http.Error(w, err.Error(), http.StatusTooManyRequests)
+					p.LogWarn("API rate limit exceeded", "userID", userID, "err", err.Error())
+					http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
 					return
 				}
 			}

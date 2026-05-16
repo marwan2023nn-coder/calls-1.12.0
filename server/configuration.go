@@ -10,6 +10,7 @@ import (
 	"maps"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"reflect"
 	"strconv"
@@ -286,6 +287,17 @@ func (c *configuration) IsValid() error {
 
 	if c.TCPServerPort == nil {
 		return fmt.Errorf("TCPServerPort should not be nil")
+	}
+
+	for _, iceServer := range c.getICEServers(false) {
+		if len(iceServer.URLs) == 0 {
+			return fmt.Errorf("ICE server URL should not be empty")
+		}
+		for _, u := range iceServer.URLs {
+			if _, err := url.Parse(u); err != nil {
+				return fmt.Errorf("failed to parse ICE server URL %q: %w", u, err)
+			}
+		}
 	}
 
 	if *c.UDPServerPort < minAllowedPort || *c.UDPServerPort > maxAllowedPort {
